@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI SafeRoute V2</title>
+    <meta name="description" content="Intelligent Risk-Aware Evacuation System">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <main id="main-content">
+
+            <!-- ==================== DASHBOARD ==================== -->
+            <section id="page-dashboard" class="page active">
+                <header class="page-header">
+                    <div class="header-titles">
+                        <h1>AI SafeRoute <span class="v2-badge">V2</span></h1>
+                        <p>Intelligent Risk-Aware Evacuation</p>
+                    </div>
+                    <div class="intel-indicator">
+                        <span class="intel-dot"></span>
+                        <span>AI Active</span>
+                    </div>
+                </header>
+
+                <div class="status-card safe" id="overall-status-card">
+                    <div class="status-icon">
+                        <i class="fa-solid fa-shield-check" id="status-icon-el"></i>
+                    </div>
+                    <div class="status-info">
+                        <h2>Current Status</h2>
+                        <h3 id="status-text">Area is Safe</h3>
+                        <p id="status-desc">No immediate threats detected in your vicinity.</p>
+                    </div>
+                    <div class="risk-score-box">
+                        <span class="risk-score-label">Risk Score</span>
+                        <span class="risk-score-value score-safe" id="live-risk-score">0</span>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="action-btn danger" onclick="navigateTo('sos')">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>SOS Alert</span>
+                    </button>
+                    <button class="action-btn primary" onclick="navigateTo('shelters')">
+                        <i class="fa-solid fa-person-shelter"></i>
+                        <span>Find Shelter</span>
+                    </button>
+                    <button class="action-btn secondary" onclick="navigateTo('map')">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <span>Risk Map</span>
+                    </button>
+                    <button class="action-btn warning" onclick="navigateTo('simulator')">
+                        <i class="fa-solid fa-cloud-showers-heavy"></i>
+                        <span>Simulate</span>
+                    </button>
+                </div>
+
+                <div class="recent-alerts-widget">
+                    <div class="widget-header">
+                        <h3>Recent Updates</h3>
+                        <button class="text-btn" onclick="navigateTo('alerts')">View All</button>
+                    </div>
+                    <ul class="alert-list-mini" id="dashboard-recent-alerts">
+                        <li class="alert-item info">
+                            <i class="fa-solid fa-info-circle"></i>
+                            <div class="alert-content">
+                                <h4>System Intelligence Activated</h4>
+                                <span class="time">Just now</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== RISK MAP ==================== -->
+            <section id="page-map" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Live Risk Map</h2>
+                </header>
+                <div class="map-container" id="risk-map"></div>
+                <!-- Route explanation card (V2 – enhanced) -->
+                <div class="route-info-card hidden" id="route-info-card">
+                    <div class="route-info-header" id="route-info-header">
+                        <i class="fa-solid fa-route"></i> Route
+                    </div>
+                    <p class="route-info-text" id="route-info-text"></p>
+                    <div class="route-debug-panel hidden" id="route-debug-panel"></div>
+                </div>
+                <!-- Map Legend -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="color-box red"></span> High Risk</div>
+                    <div class="legend-item"><span class="color-box yellow"></span> Warning</div>
+                    <div class="legend-item"><span class="color-box green"></span> Safe Zone</div>
+                    <div class="legend-item"><span class="color-box blue"></span> You</div>
+                    <div id="legend-counts" class="legend-counts"></div>
+                </div>
+            </section>
+
+            <!-- ==================== SIMULATOR ==================== -->
+            <section id="page-simulator" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Risk Simulator</h2>
+                </header>
+                
+                <div class="simulator-card">
+                    <h3><i class="fa-solid fa-brain"></i> Predictive Risk Engine <span class="v3-tag">V3</span></h3>
+                    <p>Non-linear simulation with flood spillover, future prediction, and adaptive AI weights.</p>
+                    
+                    <!-- Rainfall Slider -->
+                    <div class="slider-container">
+                        <div class="slider-value"><span id="rainfall-val">0</span> mm</div>
+                        <input type="range" id="rainfall-slider" min="0" max="300" value="0" class="styled-slider">
+                        <div class="slider-labels">
+                            <span>0mm</span>
+                            <span>150mm</span>
+                            <span>300mm</span>
+                        </div>
+                    </div>
+
+                    <!-- Time Horizon Slider -->
+                    <div class="slider-container time-horizon-container">
+                        <div class="slider-label-row">
+                            <span class="slider-label-title"><i class="fa-solid fa-clock-rotate-left"></i> Time Horizon</span>
+                            <span class="slider-label-value"><span id="time-horizon-val">0</span>h ahead</span>
+                        </div>
+                        <input type="range" id="time-horizon-slider" min="0" max="6" step="1" value="0" class="styled-slider slider-future">
+                        <div class="slider-labels">
+                            <span>Now</span>
+                            <span>3h</span>
+                            <span>6h</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback -->
+                    <div class="simulation-feedback" id="sim-feedback">
+                        ✅ All zones safe. Max risk score: 0. Normal conditions.
+                    </div>
+
+                    <!-- Per-Zone Prediction Readout -->
+                    <div class="prediction-readout">
+                        <h4><i class="fa-solid fa-chart-line"></i> Zone Predictions</h4>
+                        <div id="prediction-panel" class="prediction-panel"></div>
+                        <div id="adaptive-weights" class="adaptive-weights"></div>
+                    </div>
+
+                    <!-- Updated Formula -->
+                    <div class="sim-formula">
+                        <h4>Non-Linear Risk Formula</h4>
+                        <code>score = (rainfall² × W<sub>r</sub>) + (proximity³ × W<sub>p</sub>) − (elevation² × W<sub>e</sub>)</code>
+                        <div class="threshold-labels">
+                            <span class="t-safe">&lt;80 Safe</span>
+                            <span class="t-warn">80–140 Warning</span>
+                            <span class="t-danger">&gt;140 Danger</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== ALERTS ==================== -->
+            <section id="page-alerts" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Alert History</h2>
+                </header>
+                <div class="alerts-container">
+                    <ul class="full-alert-list" id="full-alerts-list"></ul>
+                </div>
+            </section>
+
+            <!-- ==================== SHELTERS ==================== -->
+            <section id="page-shelters" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Safe Shelters</h2>
+                </header>
+                <div class="filter-bar">
+                    <button class="filter-chip active" onclick="filterShelters('All')">All</button>
+                    <button class="filter-chip" onclick="filterShelters('School')">School</button>
+                    <button class="filter-chip" onclick="filterShelters('Hospital')">Hospital</button>
+                    <button class="filter-chip" onclick="filterShelters('Hall')">Halls</button>
+                </div>
+                <div class="shelters-list-container">
+                    <ul class="shelter-list" id="shelter-list-ul"></ul>
+                </div>
+            </section>
+
+            <!-- ==================== SOS ==================== -->
+            <section id="page-sos" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Emergency SOS</h2>
+                </header>
+                <div class="sos-container">
+                    <div class="sos-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>Only use in a real emergency. Your live location and risk data will be sent to rescue teams.</p>
+                    </div>
+                    <button class="massive-sos-btn" id="sos-trigger-btn">
+                        <span>SOS</span>
+                    </button>
+                    <p class="sos-status" id="sos-status-text">Tap to send emergency signal</p>
+                </div>
+            </section>
+
+            <!-- ==================== ADMIN ==================== -->
+            <section id="page-admin" class="page hidden">
+                <header class="page-header compact">
+                    <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Admin Center</h2>
+                </header>
+                
+                <div class="admin-stats">
+                    <div class="stat-box">
+                        <h4 id="admin-active-alerts">0</h4>
+                        <span>Alerts</span>
+                    </div>
+                    <div class="stat-box danger">
+                        <h4 id="admin-sos-requests">0</h4>
+                        <span>SOS</span>
+                    </div>
+                    <div class="stat-box high-priority">
+                        <h4 id="admin-high-priority">0</h4>
+                        <span>High Priority</span>
+                    </div>
+                    <div class="stat-box warning-box">
+                        <h4 id="admin-danger-zones">0</h4>
+                        <span>Danger Zones</span>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3>Incoming SOS Signals <span class="sort-label">(sorted by priority)</span></h3>
+                    <ul class="sos-requests-list" id="admin-sos-list">
+                        <li class="empty-state">No active SOS requests</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav id="bottom-nav">
+            <a href="#" class="nav-item active" data-target="dashboard">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-target="map">
+                <i class="fa-solid fa-map"></i>
+                <span>Map</span>
+            </a>
+            <a href="#" class="nav-item center-nav-item danger-nav" data-target="sos">
+                <div class="sos-nav-btn">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+            </a>
+            <a href="#" class="nav-item" data-target="shelters">
+                <i class="fa-solid fa-building-shield"></i>
+                <span>Shelters</span>
+            </a>
+            <a href="#" class="nav-item" data-target="admin">
+                <i class="fa-solid fa-lock"></i>
+                <span>Admin</span>
+            </a>
+        </nav>
+        
+        <!-- Toast overlay -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- V2 Engine Modules (loaded before app.js) -->
+    <script src="riskEngine.js"></script>
+    <script src="routingEngine.js"></script>
+    <script src="sosEngine.js"></script>
+    <script src="stateManager.js"></script>
+    
+    <!-- Main App -->
+    <script src="app.js"></script>
+</body>
+</html>
