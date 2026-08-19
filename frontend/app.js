@@ -25,6 +25,10 @@ const AppState = {
     routeExplanation: '',
     shelterFilter: 'All',  // Default filter
     timeHorizon: 0,        // V3: Future prediction window (0-6 hours)
+    moisture: 0.5,         // MCFRI: Soil Moisture (0-1)
+    drainage: 5,           // MCFRI: Drainage Quality (1-10)
+    permeability: 0.5,     // MCFRI: Land Use Permeability (0.1-1.0)
+    previousRainfall: 0,   // For ΔR/Δt calculation
 };
 
 // ---- Shelter Database ----
@@ -205,13 +209,55 @@ function updateLegendInfo(zones) {
 // ===========================
 const rainfallSlider = document.getElementById('rainfall-slider');
 const rainfallVal = document.getElementById('rainfall-val');
+const flashFloodVal = document.getElementById('flash-flood-val');
 
 rainfallSlider.addEventListener('input', () => {
     const val = parseInt(rainfallSlider.value);
+    AppState.previousRainfall = AppState.rainfall;
     AppState.rainfall = val;
     rainfallVal.textContent = val;
+    
+    const deltaR = AppState.rainfall - AppState.previousRainfall;
+    if (flashFloodVal) flashFloodVal.textContent = deltaR > 0 ? `+${deltaR}` : deltaR;
+
     StateManager.updateSystemState();
 });
+
+// MCFRI: Moisture Slider
+const moistureSlider = document.getElementById('moisture-slider');
+const moistureVal = document.getElementById('moisture-val');
+if (moistureSlider) {
+    moistureSlider.addEventListener('input', () => {
+        const val = parseFloat(moistureSlider.value);
+        AppState.moisture = val;
+        moistureVal.textContent = val;
+        StateManager.updateSystemState();
+    });
+}
+
+// MCFRI: Drainage Slider
+const drainageSlider = document.getElementById('drainage-slider');
+const drainageVal = document.getElementById('drainage-val');
+if (drainageSlider) {
+    drainageSlider.addEventListener('input', () => {
+        const val = parseInt(drainageSlider.value);
+        AppState.drainage = val;
+        drainageVal.textContent = val;
+        StateManager.updateSystemState();
+    });
+}
+
+// MCFRI: Permeability Slider
+const permeabilitySlider = document.getElementById('permeability-slider');
+const permeabilityVal = document.getElementById('permeability-val');
+if (permeabilitySlider) {
+    permeabilitySlider.addEventListener('input', () => {
+        const val = parseFloat(permeabilitySlider.value);
+        AppState.permeability = val;
+        permeabilityVal.textContent = val;
+        StateManager.updateSystemState();
+    });
+}
 
 // V3: Time Horizon Slider
 const timeHorizonSlider = document.getElementById('time-horizon-slider');

@@ -67,9 +67,9 @@ const RiskEngine = (() => {
     }
 
     // ============================================================
-    // 1. NON-LINEAR RISK CALCULATION (With Shelter Protection)
+    // 1. MCFRI RISK CALCULATION (With Shelter Protection)
     // ============================================================
-    function calculateNonLinearRisks(rainfall) {
+    function calculateNonLinearRisks(rainfall, moisture, drainage, permeability, deltaR) {
         // Known shelter locations (synchronized with app.js)
         const shelters = [
             [12.978, 77.591], // School
@@ -80,11 +80,43 @@ const RiskEngine = (() => {
             [12.960, 77.600]  // Koramangala
         ];
 
+        // MCFRI Constants
+        const alpha = 2.1;
+        const beta = 1.8;
+        const gamma = 3.2;
+        const delta_exp = 0.8;
+        const epsilon = 2.0;
+        const lambda = 0.15;
+
+        // --- NORMALIZATION FACTOR ---
+        // Calculate max theoretical score to scale outputs down to ~200
+        const maxRTerm = Math.pow(300, alpha) * Math.exp(beta * 1);
+        const maxPTerm = Math.pow(5, gamma) * Math.pow(1, -delta_exp);
+        const minETerm = Math.pow(1, epsilon) * 0.1;
+        const maxFlashTerm = lambda * 300;
+        
+        const maxTheoreticalScore = (maxRTerm * adaptiveState.rainfallWeight) + 
+                                    (maxPTerm * adaptiveState.proximityWeight) - 
+                                    (minETerm * adaptiveState.elevationWeight) + 
+                                    maxFlashTerm;
+        const scalingFactor = maxTheoreticalScore / 200;
+
         return zoneBaseData.map(zone => {
-            // Base Risk Score Calculation
-            let riskScore = (rainfall * rainfall * adaptiveState.rainfallWeight) +
-                            (Math.pow(zone.proximityToWater, 3) * adaptiveState.proximityWeight) -
-                            (Math.pow(zone.elevationFactor, 2) * adaptiveState.elevationWeight);
+            // Base Risk Score Calculation (MCFRI)
+            // S(t) = [R(t)^α × e^(βM)] × Wr + [P^γ × D^(-δ)] × Wp - [E^ε × L] × We + λ × (ΔR/Δt)
+            
+            const R_term = Math.pow(rainfall, alpha) * Math.exp(beta * moisture);
+            const P_term = Math.pow(zone.proximityToWater, gamma) * Math.pow(drainage, -delta_exp);
+            const E_term = Math.pow(zone.elevationFactor, epsilon) * permeability;
+            const Flash_term = lambda * deltaR;
+
+            let riskScore = (R_term * adaptiveState.rainfallWeight) +
+                            (P_term * adaptiveState.proximityWeight) -
+                            (E_term * adaptiveState.elevationWeight) +
+                            Flash_term;
+
+            // Normalize the score
+            riskScore = riskScore / scalingFactor;
 
             // --- V3.1: SHELTER PROTECTION LOGIC (Inhibitor Field) ---
             // If the zone is near a shelter, it benefits from "Urban Engineering Protection"
@@ -242,9 +274,9 @@ const RiskEngine = (() => {
     // ============================================================
     // 6. FULL PIPELINE (orchestrated by StateManager)
     // ============================================================
-    function runFullSimulation(rainfall, timeHorizon) {
-        // Step 1: Non-linear base calculation
-        let zones = calculateNonLinearRisks(rainfall);
+    function runFullSimulation(rainfall, timeHorizon, moisture = 0.5, drainage = 5, permeability = 0.5, deltaR = 0) {
+        // Step 1: MCFRI calculation
+        let zones = calculateNonLinearRisks(rainfall, moisture, drainage, permeability, deltaR);
 
         // Step 2: Spillover
         zones = applyZoneSpillover(zones);

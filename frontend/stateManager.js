@@ -10,9 +10,17 @@ const StateManager = (() => {
      */
     function updateSystemState() {
         const timeHorizon = AppState.timeHorizon || 0;
+        const deltaR = AppState.rainfall - (AppState.previousRainfall || 0);
 
-        // V3 Pipeline: Full simulation (non-linear → spillover → radius → future → adapt)
-        const zones = RiskEngine.runFullSimulation(AppState.rainfall, timeHorizon);
+        // V3 Pipeline: Full simulation (MCFRI → spillover → radius → future → adapt)
+        const zones = RiskEngine.runFullSimulation(
+            AppState.rainfall, 
+            timeHorizon,
+            AppState.moisture !== undefined ? AppState.moisture : 0.5,
+            AppState.drainage !== undefined ? AppState.drainage : 5,
+            AppState.permeability !== undefined ? AppState.permeability : 0.5,
+            deltaR
+        );
         AppState.computedZones = zones;
 
         // Determine overall risk

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI SafeRoute V4 - Complete System Specification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            color: #0f172a;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            color: #475569;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .date {
+            font-size: 1rem;
+            color: #64748b;
+            margin-top: 10px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid #3b82f6;
+        }
+        .card h2 {
+            color: #1e3a8a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h3 {
+            color: #2563eb;
+            margin-top: 25px;
+            font-size: 1.3rem;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI SafeRoute V4</h1>
+            <p>Complete System Specification & Feature Report</p>
+            <div class="date" id="current-date"></div>
+        </div>
+
+        <div class="card">
+            <h2>1. System Overview</h2>
+            <p><strong>Project Title:</strong> AI SafeRoute – Intelligent Disaster & Evacuation Management System<br>
+            <strong>Current Version:</strong> V4.0 (MCFRI Engine Active)<br>
+            <strong>System Role:</strong> A full-stack, AI-powered platform for real-time disaster monitoring, predictive flood simulation, and risk-aware navigation.</p>
+            
+            <h3>Core Architecture</h3>
+            <ul>
+                <li><strong>Frontend:</strong> Vanilla Javascript (ES6+), HTML5 Semantic Structure, CSS3 (Glassmorphism), Leaflet.js (Mapping).</li>
+                <li><strong>Backend:</strong> Node.js, Express.js (REST API), Prisma ORM.</li>
+                <li><strong>Database:</strong> SQLite (Local) / PostgreSQL (Production Ready).</li>
+                <li><strong>External Integrations:</strong> OSRM API (Real-Road Routing), CARTO Voyager (Map Tiles).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>2. Predictive Simulation Engine (MCFRI)</h2>
+            <p>The "brain" of the application, used to simulate catastrophic scenarios before they happen using the <strong>Modified Catchment Flood Risk Index (MCFRI)</strong>.</p>
+            
+            <ul>
+                <li><strong>Non-Linear Risk Calculus:</strong> Evaluates exponential factors including Rainfall, Soil Moisture, Drainage Quality, and Land Use Permeability to accurately model flash floods and ground saturation.</li>
+                <li><strong>Flash Flood Rate Tracking (ΔR/Δt):</strong> Automatically monitors the velocity of incoming rain, distinguishing between slow accumulation and sudden, violent cloudbursts.</li>
+                <li><strong>Fluid Spillover Logic:</strong> Simulates how floodwater moves across the landscape. Danger zones (Score > 140) automatically "spill" 10% of their risk score to any neighbors within a 2km radius.</li>
+                <li><strong>Time Horizon Prediction:</strong> Projects the current risk intensity over a selectable 0–6 hour window, allowing responders to look into the future.</li>
+                <li><strong>Adaptive AI Weights:</strong> A short-term memory system monitors the last 5 simulation states. If risk is escalating rapidly, it automatically adjusts its "Sensitivity Weights" to trigger earlier warnings.</li>
+                <li><em>Note: For intellectual property protection, the exact MCFRI formula has been securely abstracted from the public UI.</em></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>3. Intelligent Map & Navigation</h2>
+            <p>The Live Risk Map is the primary operational interface for the user and emergency responders.</p>
+            
+            <ul>
+                <li><strong>Real-Road Navigation (OSRM):</strong> Unlike simple "point-to-point" lines, the system calculates paths using actual streets and roads, providing accurate distance and duration estimates based on road geometry.</li>
+                <li><strong>Risk-Aware Routing (The Fail-Safe Strategy):</strong> The routing engine actively evaluates the risk of every street segment:
+                    <ul>
+                        <li><span class="badge">Safe Route</span> (Default): Strictly avoids all Warning and Danger zones.</li>
+                        <li><span class="badge">Cautious Route</span> (Fallback): If no purely safe path exists, it permits transit through "Warning" zones but completely avoids "Danger."</li>
+                        <li><span class="badge">Emergency Route</span> (Absolute Path): If every exit is blocked, it calculates the least-dangerous path through high-risk areas to reach safety.</li>
+                    </ul>
+                </li>
+                <li><strong>Dual-Layer Visualization:</strong> The map renders two distinct indicators for each zone: an Inner Solid Circle representing the current physical risk, and a Dashed Outer Ring showing the predicted future risk footprint.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>4. Emergency SOS Priority Intelligence</h2>
+            <p>A high-fidelity triage system designed to coordinate rescue operations during mass-casualty events.</p>
+            
+            <ul>
+                <li><strong>Priority Scoring Algorithm:</strong> SOS alerts are not handled simply "first-come, first-served." The backend scores every SOS request based on two critical factors:
+                    <ol>
+                        <li><strong>Localized Risk Score:</strong> Users physically trapped in Danger zones are pushed up the queue.</li>
+                        <li><strong>Wait Time:</strong> The total elapsed time since the signal was activated.</li>
+                    </ol>
+                </li>
+                <li><strong>Automated Triage Labels:</strong> Responders see requests automatically tagged as High (Red), Medium (Yellow), or Low (Green) priority.</li>
+                <li><strong>Pulse-SOS Interface:</strong> The user-facing SOS button utilizes a rhythmic, high-visibility red pulse animation, designed for ease-of-use under extreme psychological stress.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>5. Smart Shelter Management</h2>
+            <p>Intelligent safe-haven coordination utilizing geographic proximity logic.</p>
+            
+            <ul>
+                <li><strong>Smart Proximity Logic:</strong> Uses the Haversine Formula to constantly calculate the user's real-time distance to every available shelter.</li>
+                <li><strong>The "Nearest" Badge:</strong> The UI automatically highlights and badges the absolute closest facility within the selected category.</li>
+                <li><strong>Categorized Filtering:</strong> Users can filter for specific facility types:
+                    <ul>
+                        <li><strong>Schools:</strong> For high-capacity, long-term stays.</li>
+                        <li><strong>Hospitals:</strong> For immediate medical emergencies.</li>
+                        <li><strong>Halls:</strong> For temporary refuge and assembly.</li>
+                    </ul>
+                </li>
+                <li><strong>Infrastructure Protection Field:</strong> The Risk Engine recognizes shelters and applies a localized risk reduction (-40 points), simulating the advanced drainage and flood walls typical of designated safe havens.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>6. Backend Infrastructure & Admin Console</h2>
+            <p>A production-grade REST API backend built for rapid scaling and data persistence.</p>
+            
+            <div class="highlight-box">
+                <strong>Core API Endpoints:</strong><br>
+                <code>POST /api/risk</code> — Offloads complex non-linear math to the server.<br>
+                <code>POST /api/sos</code> — Registers emergency signals and runs priority triage.<br>
+                <code>GET /api/shelters</code> — Fetches managed safe-facility data.<br>
+                <code>GET /api/sos</code> — Real-time feed of all active rescue tickets for the Admin console.
+            </div>
+
+            <ul>
+                <li><strong>Admin Dashboard:</strong> A real-time command center providing a feed of active rescue tickets, system statistics, and manual overrides for the simulation engine.</li>
+                <li><strong>Data Safety:</strong> Utilizing Prisma ORM ensures that all SOS and shelter data is strictly typed and securely handled before touching the database.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    </script>
+</body>
+</html>
