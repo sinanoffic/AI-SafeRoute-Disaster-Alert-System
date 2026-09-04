@@ -3,7 +3,7 @@
 
 # Dependencies
 node_modules/
-package-lock.json
+
 
 # Build Outputs
 dist/
@@ -18,3 +18,4 @@ Thumbs.db
 # Database
 backend/dev.db
 backend/dev.db-journal
+
