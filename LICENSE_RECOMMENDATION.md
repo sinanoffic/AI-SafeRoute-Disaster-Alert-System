@@ -1,8 +1,8 @@
-﻿# License Recommendation
+# License Recommendation
 
-This repository does not currently have a formal root-level license file, although the `backend/package.json` specifies `ISC`. Given the project's association with a provisional patent filing, selecting the appropriate open-source license is critical.
+This repository does not contain a root-level open-source LICENSE file, and `backend/package.json` is now explicitly marked `UNLICENSED`. The current v1.0.0 decision is to retain software and IP rights while still making the research-software record publicly viewable and citable. 
 
-Here is a high-level comparison of common licenses regarding patents. **This is not legal advice.**
+Given the project's association with a provisional patent filing, selecting the appropriate open-source license is critical if the decision changes in the future. Here is a high-level comparison of common licenses regarding patents. **This is not legal advice.**
 
 ## 1. Apache License 2.0
 - **Patent Grant:** Contains an explicit, perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable patent license. If you hold a patent on this software, anyone using it under Apache 2.0 receives a license to those patent claims.

@@ -1,4 +1,4 @@
-# MCFRI Legacy v1.0 — Methodology
+# MCFRI Legacy v1.0 - Methodology
 
 The methodology described here applies strictly to the **implemented legacy prototype** (MCFRI Legacy v1.0), which relies on deterministic arithmetic heuristics rather than data-driven empirical calibration. 
 

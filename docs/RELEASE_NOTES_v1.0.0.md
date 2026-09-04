@@ -1,4 +1,4 @@
-# MCFRI Legacy v1.0.0 — AI SafeRoute Archival Research-Software Release
+# MCFRI Legacy v1.0.0 - AI SafeRoute Archival Research-Software Release
 
 This is the first formal archival release of the original **MCFRI Legacy** experimental flood-risk engine and the **AI SafeRoute** risk-aware road routing prototype.
 
