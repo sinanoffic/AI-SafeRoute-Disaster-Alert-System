@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "MCFRI Legacy v1.0: AI SafeRoute Disaster Alert System"
+message: "If you use this software, please cite the archival software release."
+type: software
+authors:
+  - given-names: "Muhammed Sinan"
+    family-names: "C"
+    orcid: "https://orcid.org/0009-0000-0667-3714"
+version: 1.0.0
+repository-code: 'https://github.com/sinanoffic/AI-SafeRoute-Disaster-Alert-System'
