@@ -287,7 +287,7 @@ function setRiskLevel(level) {
 
     if (level === 'danger') {
         icon.className = 'fa-solid fa-triangle-exclamation';
-        text.textContent = 'High Risk Alert';
+        text.textContent = 'Prototype Modeled-Risk Alert';
         desc.textContent = 'Prototype warning: modeled risk is elevated. Consider higher ground and follow official emergency instructions.';
         if (prev !== 'danger') {
             addAlert('danger', 'fa-triangle-exclamation', 'Prototype Modeled-Risk Alert',
@@ -297,7 +297,7 @@ function setRiskLevel(level) {
         }
     } else if (level === 'warning') {
         icon.className = 'fa-solid fa-exclamation-circle';
-        text.textContent = 'Warning Active';
+        text.textContent = 'Prototype Modeled-Risk Warning';
         desc.textContent = 'Prototype modeled-risk classification: Moderate under the current simulated inputs. Monitor official local guidance and be prepared to follow instructions from emergency authorities if conditions require it.';
         if (prev === 'safe') {
             addAlert('warning', 'fa-exclamation-circle', 'Prototype Risk Warning',
