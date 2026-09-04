@@ -1,3 +1,11 @@
+<!-- 
+====================================================================
+ARCHIVAL DISCLAIMER:
+Historical prototype document. Claims in this document reflect an early 
+development-stage demonstration and have not been independently reproduced 
+or validated under the later MCFRI scientific validation protocol.
+====================================================================
+-->
 # Current Project Status: AI SafeRoute V2
 
 ## Overview
@@ -39,3 +47,4 @@ With CORS enabled and data returning securely as JSON, the API is ready to serve
 Before going fully live:
 - Transition the Prisma schema in the backend from SQLite back to a managed **PostgreSQL** database (e.g., Supabase, Neon).
 - Evaluate deploying the backend API to a hosting provider like Render or Railway.
+

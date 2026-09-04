@@ -1,4 +1,4 @@
-// ===========================
+﻿// ===========================
 // AI SafeRoute V2 – Main App Logic
 // ===========================
 
@@ -305,8 +305,8 @@ function setRiskLevel(level) {
         }
     } else {
         icon.className = 'fa-solid fa-shield-check';
-        text.textContent = 'Area is Safe';
-        desc.textContent = 'No immediate threats detected in your vicinity.';
+        text.textContent = 'Prototype risk classification: Low';
+        desc.textContent = 'No elevated risk detected under the current simulated inputs.';
     }
 }
 
@@ -558,7 +558,7 @@ async function recalculateActiveRoute(silent = true) {
     if (!silent) {
         showToast(targetRoute.riskLevel === 'danger' ? 'danger' : 'success', 
                   'Road Path Calculated', 
-                  `Safe navigation to ${targetRoute.shelter.name}`, 'route-toast');
+                  `Lower modeled-risk route to ${targetRoute.shelter.name}`, 'route-toast');
     }
 }
 
@@ -582,7 +582,7 @@ sosBtn.addEventListener('click', () => {
     AppState.sosActive = true;
     sosBtn.classList.add('active');
     sosBtn.innerHTML = '<i class="fa-solid fa-check" style="font-size:48px"></i>';
-    sosStatusText.textContent = '🔴 Emergency signal sent! Help is on the way.';
+    sosStatusText.textContent = 'Demo SOS state activated. No real emergency service has been contacted.';
 
     // V2: Create enriched SOS request
     const request = SOSEngine.createRequest(AppState.userLocation, AppState.riskLevel);
@@ -690,3 +690,4 @@ function init() {
 }
 
 init();
+
