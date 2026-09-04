@@ -1,3 +1,10 @@
+====================================================================
+ARCHIVAL DISCLAIMER:
+Historical prototype document. Claims in this document reflect an early 
+development-stage demonstration and have not been independently reproduced 
+or validated under the later MCFRI scientific validation protocol.
+====================================================================
+
 AI SafeRoute V4 — Predictive Rain Simulation Engine: Complete Technical Report
 
 =====================================================
@@ -281,3 +288,4 @@ Validated On   : Kerala Floods 2018
 Author         : AI SafeRoute Development Team
 Classification : Research Documentation
 =====================================================
+
