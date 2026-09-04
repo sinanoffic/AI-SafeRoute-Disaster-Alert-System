@@ -574,8 +574,8 @@ sosBtn.addEventListener('click', () => {
         AppState.sosActive = false;
         sosBtn.classList.remove('active');
         sosBtn.innerHTML = '<span>SOS</span>';
-        sosStatusText.textContent = 'Tap to send emergency signal';
-        showToast('success', 'SOS Cancelled', 'Your emergency signal has been cancelled.');
+        sosStatusText.textContent = 'Tap to activate demo SOS';
+        showToast('success', 'SOS Cancelled', 'Demo SOS state cleared.');
         return;
     }
 
@@ -588,9 +588,9 @@ sosBtn.addEventListener('click', () => {
     const request = SOSEngine.createRequest(AppState.userLocation, AppState.riskLevel);
     AppState.sosRequests.push(request);
 
-    addAlert('danger', 'fa-bell', 'SOS Signal Sent',
-        `Emergency signal from your location. Priority: ${request.priorityLabel}`);
-    showToast('danger', 'SOS Activated!', 'Your location has been shared with rescue teams.');
+    addAlert('danger', 'fa-bell', 'Demo SOS Activated',
+        `Prototype SOS event recorded locally. Priority: ${request.priorityLabel}`);
+    showToast('danger', 'SOS Activated!', 'Prototype SOS state recorded locally. No emergency service has been contacted.');
 
     // Trigger full system update (recalculates SOS priorities)
     StateManager.updateSystemState();

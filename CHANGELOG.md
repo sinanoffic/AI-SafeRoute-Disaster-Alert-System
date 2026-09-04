@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Generated development database removed from release tree and ignored.
+- Installation documentation corrected for reproducibility.
+- Remaining prototype emergency wording qualified (SOS features clarified as demo-only).
 - Archival naming standardized to MCFRI Legacy v1.0 / AI SafeRoute.
 - Research status clarified in documentation to highlight prototype nature.
 - Unsupported scientific and marketing claims (e.g., "100% accurate", "patent-worthy") removed or qualified.

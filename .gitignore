@@ -16,6 +16,9 @@ build/
 Thumbs.db
 
 # Database
-backend/dev.db
-backend/dev.db-journal
+
+
+
+
+backend/prisma/dev.db*
 
