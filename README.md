@@ -1,4 +1,4 @@
-# MCFRI Legacy v1.0 — AI SafeRoute
+﻿# MCFRI Legacy v1.0 — AI SafeRoute
 
 **Experimental flood-risk scoring and risk-aware evacuation-routing prototype.**
 
@@ -110,4 +110,14 @@ B.E. Artificial Intelligence and Machine Learning
 
 ## License
 
-Pending finalization (see `LICENSE_RECOMMENDATION.md`).
+Copyright � 2026 Muhammed Sinan C.
+
+No open-source license is granted for this repository at this time.
+The source code is publicly available for inspection, research reference,
+and citation, but reuse, modification, redistribution, or commercial use
+is not granted except where otherwise required by applicable platform
+terms or with permission from the author.
+
+A formal licensing decision may be revisited after the project's
+intellectual-property position is clarified.
+

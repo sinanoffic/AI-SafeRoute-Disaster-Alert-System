@@ -1,4 +1,4 @@
-# Release Checklist: MCFRI Legacy v1.0.0
+﻿# Release Checklist: MCFRI Legacy v1.0.0
 
 - [x] README final
 - [x] equation unchanged
@@ -6,7 +6,7 @@
 - [x] historical report disclaimers present
 - [x] CITATION.cff validated
 - [x] ORCID correct
-- [ ] license decision finalized
+- [x] Licensing decision finalized — no open-source license for v1.0.0
 - [x] no secrets
 - [x] clean clone tested
 - [x] installation instructions tested
@@ -17,3 +17,4 @@
 - [x] Zenodo integration ready
 - [x] DOI NOT yet created
 - [x] final independent audit completed
+

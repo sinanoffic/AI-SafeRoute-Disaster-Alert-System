@@ -1,4 +1,4 @@
-# License Recommendation
+﻿# License Recommendation
 
 This repository does not currently have a formal root-level license file, although the `backend/package.json` specifies `ISC`. Given the project's association with a provisional patent filing, selecting the appropriate open-source license is critical.
 
@@ -19,6 +19,11 @@ Here is a high-level comparison of common licenses regarding patents. **This is 
 - **Recommendation:** Good if you want to force downstream users to share their improvements under the same open terms, but it can restrict commercial adoption.
 
 ## Current Status
-**PENDING_USER_DECISION**
 
-Until a license is explicitly selected and a `LICENSE` file is added, the repository remains under exclusive copyright by default, despite being public on GitHub.
+**CURRENT DECISION:**
+No open-source software license will be granted for MCFRI Legacy v1.0.0 at this stage. Repository copyright remains with Muhammed Sinan C.
+
+**Reason:**
+IP/patent position is still being preserved and clarified.
+
+This decision may be revisited later after the project's intellectual-property position is clarified.
