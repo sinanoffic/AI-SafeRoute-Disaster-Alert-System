@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCFRI-V2 Study & Reference Dashboard | Multi-Catchment Flood Risk Index</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- MathJax 3 for rendering beautiful LaTeX equations -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #60a5fa;
+            --navy: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+            
+            --safe: #10b981;
+            --safe-bg: #ecfdf5;
+            --safe-border: #a7f3d0;
+            
+            --warn: #f59e0b;
+            --warn-bg: #fffbeb;
+            --warn-border: #fde68a;
+            
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: var(--slate-800);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navigation Header */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--slate-200);
+            padding: 0.85rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--navy);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-badge {
+            background: #dbeafe;
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--slate-600);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Main Container */
+        .page-wrapper {
+            display: flex;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2.5rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 5rem;
+            height: calc(100vh - 6rem);
+            overflow-y: auto;
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1.2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate-500);
+            margin-bottom: 0.8rem;
+            padding-left: 0.6rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--slate-700);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--slate-100);
+            color: var(--primary);
+        }
+
+        .sidebar-menu a.active {
+            background: #eff6ff;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 3rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .hero-banner h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: #dbeafe;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hero-tag {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--white);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Section Cards */
+        .content-card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--slate-100);
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* Alert / Callout Boxes */
+        .callout {
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1.5rem;
+            margin: 1.2rem 0;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .callout-warning {
+            background: var(--warn-bg);
+            border-left: 4px solid var(--warn);
+            color: #92400e;
+        }
+
+        .callout-info {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            color: #1e40af;
+        }
+
+        .callout-success {
+            background: var(--safe-bg);
+            border-left: 4px solid var(--safe);
+            color: #065f46;
+        }
+
+        .callout i {
+            font-size: 1.25rem;
+            margin-top: 2px;
+        }
+
+        .callout-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .callout-body {
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        /* Formula Display Boxes */
+        .equation-card {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: var(--radius-md);
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .equation-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 0.8rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .equation-box {
+            font-size: 1.45rem;
+            margin: 0.5rem 0;
+        }
+
+        /* 4 Component Grid Cards */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comp-card {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 1.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .comp-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comp-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-weight-pill {
+            background: #dbeafe;
+            color: var(--primary-dark);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .comp-formula-pill {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .comp-desc {
+            font-size: 0.88rem;
+            color: var(--slate-600);
+            line-height: 1.5;
+        }
+
+        .comp-vars {
+            list-style: none;
+            font-size: 0.82rem;
+            color: var(--slate-700);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-top: 1px solid var(--slate-200);
+            padding-top: 10px;
+        }
+
+        .comp-vars li {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comp-vars code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+
+        .styled-table th {
+            background: #f8fafc;
+            color: var(--navy);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--slate-200);
+            white-space: nowrap;
+        }
+
+        .styled-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700);
+            vertical-align: top;
+        }
+
+        .styled-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .styled-table code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+        }
+
+        /* Threshold Scale Graphic */
+        .threshold-graphic {
+            margin: 1.5rem 0;
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+        }
+
+        .scale-bar {
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+            margin-bottom: 12px;
+        }
+
+        .scale-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .scale-safe { background: linear-gradient(90deg, #10b981, #34d399); flex: 40; }
+        .scale-warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); flex: 30; }
+        .scale-danger { background: linear-gradient(90deg, #ef4444, #f87171); flex: 30; }
+
+        .scale-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--slate-500);
+            font-weight: 600;
+        }
+
+        /* Interactive Lab / Live Simulator */
+        .lab-container {
+            background: #ffffff;
+            border: 2px solid #3b82f6;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .lab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--slate-200);
+            padding-bottom: 1rem;
+        }
+
+        .lab-badge {
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 960px) {
+            .lab-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        .control-value-display {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sim-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .sim-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .sim-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .result-panel {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: var(--radius-md);
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .gauge-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .live-score-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .live-tier-badge {
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .breakdown-bars-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .live-breakdown-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+        }
+
+        .live-bar-label {
+            width: 140px;
+            flex-shrink: 0;
+            color: #cbd5e1;
+        }
+
+        .live-bar-track {
+            flex: 1;
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .live-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.2s ease;
+        }
+
+        .live-bar-val {
+            width: 45px;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .live-explain-box {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 3px solid #60a5fa;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+            font-style: italic;
+        }
+
+        /* Code Blocks */
+        .code-box {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.6;
+            margin: 1rem 0;
+            border: 1px solid #334155;
+        }
+
+        .code-box .kw { color: #f472b6; }
+        .code-box .fn { color: #60a5fa; }
+        .code-box .str { color: #a7f3d0; }
+        .code-box .num { color: #fbbf24; }
+        .code-box .cm { color: #64748b; font-style: italic; }
+
+        /* Step Pills */
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .step-card {
+            display: flex;
+            gap: 18px;
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1.5rem;
+        }
+
+        .step-number {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 0.88rem;
+            color: var(--slate-600);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--slate-500);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--slate-200);
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Sticky Navbar -->
+    <nav class="navbar">
+        <a href="#" class="nav-brand">
+            <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+            <span>AI SafeRoute</span>
+            <span class="nav-badge">MCFRI-V2 Study Dashboard</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#master-equation">Equation</a></li>
+            <li><a href="#sub-components">Components</a></li>
+            <li><a href="#variables-glossary">Variables</a></li>
+            <li><a href="#interactive-lab">Live Lab</a></li>
+            <li><a href="#worked-example">Numerical Example</a></li>
+            <li><a href="#code-reproduction">Code Specs</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrapper">
+        
+        <!-- Left Quick-Jump Index -->
+        <aside class="sidebar">
+            <h4>Study Guide Index</h4>
+            <ul class="sidebar-menu">
+                <li><a href="#executive-overview" class="active"><i class="fa-solid fa-compass"></i> 1. Overview & Scope</a></li>
+                <li><a href="#master-equation"><i class="fa-solid fa-square-root-variable"></i> 2. Master Equation</a></li>
+                <li><a href="#sub-components"><i class="fa-solid fa-cubes"></i> 3. Four Sub-Components</a></li>
+                <li><a href="#variables-glossary"><i class="fa-solid fa-table-list"></i> 4. Variable Glossary</a></li>
+                <li><a href="#normalization-layer"><i class="fa-solid fa-sliders"></i> 5. Normalization Layer</a></li>
+                <li><a href="#thresholds-tiers"><i class="fa-solid fa-triangle-exclamation"></i> 6. Classification Tiers</a></li>
+                <li><a href="#secondary-pipeline"><i class="fa-solid fa-diagram-project"></i> 7. Secondary Pipeline</a></li>
+                <li><a href="#interactive-lab"><i class="fa-solid fa-flask-vial"></i> 8. Live Interactive Lab</a></li>
+                <li><a href="#worked-example"><i class="fa-solid fa-calculator"></i> 9. Worked Numerical Example</a></li>
+                <li><a href="#validation-protocol"><i class="fa-solid fa-chart-pie"></i> 10. Integrity Tests</a></li>
+                <li><a href="#code-reproduction"><i class="fa-solid fa-code"></i> 11. Implementation Code</a></li>
+            </ul>
+        </aside>
+
+        <!-- Right Main Content -->
+        <main class="main-content">
+
+            <!-- Hero Banner -->
+            <div class="hero-banner" id="executive-overview">
+                <h1>Multi-Catchment Flood Risk Index (MCFRI-V2)</h1>
+                <p class="hero-subtitle">
+                    Comprehensive mathematical specification, variable definitions, non-linear hydro-kinetic formulation, and interactive evaluation laboratory for the AI SafeRoute risk engine.
+                </p>
+                <div class="hero-tags">
+                    <span class="hero-tag"><i class="fa-solid fa-bullseye"></i> Bounded Output: [0, 200]</span>
+                    <span class="hero-tag"><i class="fa-solid fa-chart-line"></i> Michaelis-Menten Kinetics</span>
+                    <span class="hero-tag"><i class="fa-solid fa-layer-group"></i> 4 Normalized Sub-Components</span>
+                    <span class="hero-tag"><i class="fa-solid fa-microchip"></i> Zero LLM / Deterministic Explainability</span>
+                </div>
+            </div>
+
+            <!-- Caution Callout -->
+            <div class="callout callout-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <div class="callout-title">UNVALIDATED DEVELOPMENT STATUS NOTICE</div>
+                    <div class="callout-body">
+                        All mathematical equations, exponents ($\alpha, \beta, \gamma, \delta, \epsilon, \eta$), half-saturation constants ($R_0, Q_0$), component weights ($w_{RM}, w_W, w_T, w_D$), and classification thresholds documented herein are <strong>UNVALIDATED DEVELOPMENT DEFAULTS</strong>. They are engineered to establish bounded mathematical behavior ($S(t) \in [0, 200]$) and test system UI/backend pipelines. <strong>These values must undergo rigorous empirical calibration and statistical validation against historical meteorological and hydrological datasets before operational deployment.</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1: The Master Equation -->
+            <section class="content-card" id="master-equation">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-square-root-variable"></i></div>
+                    <h2>1. The MCFRI-V2 Master Equation</h2>
+                </div>
+
+                <p>
+                    The <strong>Multi-Catchment Flood Risk Index Version 2 (MCFRI-V2)</strong> transforms multi-source meteorological, hydrologic, and topographic telemetry into a strictly bounded, non-linear risk score $S(t) \in [0, 200]$.
+                </p>
+
+                <div class="equation-card">
+                    <div class="equation-title">Master Bounded Formulation</div>
+                    <div class="equation-box">
+                        $$S(t) = 200 \times \Big[ w_{RM} \cdot F_{RM} + w_{W} \cdot F_{W} + w_{T} \cdot F_{T} + w_{\Delta} \cdot F_{\Delta} \Big]$$
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-card">
+                        <div class="step-number">S</div>
+                        <div class="step-content">
+                            <div class="step-title">Bounded Composite Risk Score \(S(t) \in [0, 200]\)</div>
+                            <div class="step-desc">A dimensionless continuous risk metric. Strictly bounded between 0 (Absolute Safety) and 200 (Catastrophic Flash Inundation).</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">200</div>
+                        <div class="step-content">
+                            <div class="step-title">Scale Multiplier (\(S_{\max}\))</div>
+                            <div class="step-desc">Normalizes the unit sum of weights $\sum w_i = 1.0$ and unit factors $F_i \in [0, 1]$ to the human-interpretable 0–200 operational scale.</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">w</div>
+                        <div class="step-content">
+                            <div class="step-title">Normalized Component Weights (\(w_{RM} + w_W + w_T + w_\Delta = 1.0\))</div>
+                            <div class="step-desc">Determines the proportional contribution of each environmental vulnerability channel. Evaluated with auto-normalization guards.</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">F</div>
+                        <div class="step-content">
+                            <div class="step-title">Four Non-Linear Sub-Component Risk Factors (\(F_i \in [0, 1]\))</div>
+                            <div class="step-desc">Each factor isolates a distinct physical mechanism: rainfall saturation, water proximity/drainage, elevation/land permeability, and flash flood acceleration.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Four Sub-Components -->
+            <section class="content-card" id="sub-components">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-cubes"></i></div>
+                    <h2>2. The Four Non-Linear Sub-Components</h2>
+                </div>
+
+                <div class="comp-grid">
+                    
+                    <!-- FRM -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <div class="comp-title"><i class="fa-solid fa-cloud-showers-heavy" style="color: var(--primary);"></i> Rainfall-Moisture</div>
+                            <span class="comp-weight-pill">Weight \(w_{RM} = 0.40\)</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $$F_{RM} = r^\alpha \cdot \left(\frac{e^{\beta m} - 1}{e^\beta - 1}\right)$$
+                        </div>
+                        <p class="comp-desc">
+                            Models asymptotic rainfall saturation coupled exponentially with antecedent soil moisture. Dry soil absorbs rain; saturated soil produces rapid runoff.
+                        </p>
+                        <ul class="comp-vars">
+                            <li><span>Normalized Rainfall (\(r\)):</span> <code>R / (R + 150)</code></li>
+                            <li><span>Soil Moisture (\(m\)):</span> <code>[0.0, 1.0]</code></li>
+                            <li><span>Saturation Exponent (\(\alpha\)):</span> <code>1.5</code></li>
+                            <li><span>Moisture Exponent (\(\beta\)):</span> <code>2.0</code></li>
+                        </ul>
+                    </div>
+
+                    <!-- FW -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <div class="comp-title"><i class="fa-solid fa-water" style="color: var(--accent-cyan);"></i> Water & Drainage</div>
+                            <span class="comp-weight-pill">Weight \(w_W = 0.25\)</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $$F_W = p^\gamma \cdot (1 - d)^\delta$$
+                        </div>
+                        <p class="comp-desc">
+                            Quantifies vulnerability from physical proximity to riverbanks/coastlines compounded by municipal drainage culvert deficits \((1 - d)\).
+                        </p>
+                        <ul class="comp-vars">
+                            <li><span>Water Proximity (\(p\)):</span> <code>raw (1-5) / 5</code></li>
+                            <li><span>Drainage Quality (\(d\)):</span> <code>0=poor, 1=opt</code></li>
+                            <li><span>Proximity Exponent (\(\gamma\)):</span> <code>2.0</code></li>
+                            <li><span>Drainage Exponent (\(\delta\)):</span> <code>1.5</code></li>
+                        </ul>
+                    </div>
+
+                    <!-- FT -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <div class="comp-title"><i class="fa-solid fa-mountain-city" style="color: var(--accent-purple);"></i> Topography & Land-Use</div>
+                            <span class="comp-weight-pill">Weight \(w_T = 0.20\)</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $$F_T = (1 - h)^\epsilon \cdot (1 - l)$$
+                        </div>
+                        <p class="comp-desc">
+                            Quantifies vulnerability from low topographic elevation \((1 - h)\) (HAND) and urban concrete impermeability \((1 - l)\).
+                        </p>
+                        <ul class="comp-vars">
+                            <li><span>Topographic Safety (\(h\)):</span> <code>0=basin, 1=crest</code></li>
+                            <li><span>Surface Permeability (\(l\)):</span> <code>0=paved, 1=forest</code></li>
+                            <li><span>Elevation Exponent (\(\epsilon\)):</span> <code>2.0</code></li>
+                            <li><span>Permeability Term:</span> <code>(1 - l) linear</code></li>
+                        </ul>
+                    </div>
+
+                    <!-- FDelta -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <div class="comp-title"><i class="fa-solid fa-bolt" style="color: var(--warn);"></i> Flash Acceleration</div>
+                            <span class="comp-weight-pill">Weight \(w_D = 0.15\)</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $$F_\Delta = q^\eta$$
+                        </div>
+                        <p class="comp-desc">
+                            Half-wave rectified rate-of-change factor detecting cloudbursts. Rising rainfall spikes danger; steady or receding rain produces exactly zero.
+                        </p>
+                        <ul class="comp-vars">
+                            <li><span>Rain Acceleration (\(q\)):</span> <code>ΔR / (ΔR + 50)</code></li>
+                            <li><span>Positive Rate (\(\Delta R\)):</span> <code>max(0, dR/dt)</code></li>
+                            <li><span>Half-Sat Constant (\(Q_0\)):</span> <code>50 mm/event</code></li>
+                            <li><span>Acceleration Exponent (\(\eta\)):</span> <code>1.2</code></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 3: Variable Definitions & Glossary -->
+            <section class="content-card" id="variables-glossary">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-table-list"></i></div>
+                    <h2>3. Complete Variable Definitions & Glossary</h2>
+                </div>
+
+                <p>Every mathematical symbol in the MCFRI-V2 engine is cataloged below with its physical interpretation, permissible domain, units, and development default.</p>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Variable Name</th>
+                                <th>Physical Interpretation</th>
+                                <th>Units</th>
+                                <th>Permissible Domain</th>
+                                <th>Development Default</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>\(R\)</strong></td>
+                                <td><code>rainfall</code></td>
+                                <td>Accumulated precipitation volume</td>
+                                <td>$\text{mm}$</td>
+                                <td>$[0, \infty)$</td>
+                                <td>Dynamic ($0 - 300\text{ mm}$)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(R_0\)</strong></td>
+                                <td><code>R0</code></td>
+                                <td>Rainfall half-saturation constant ($r = 0.5$ at $R = R_0$)</td>
+                                <td>$\text{mm}$</td>
+                                <td>$(0, \infty)$</td>
+                                <td><code>150 mm</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(r\)</strong></td>
+                                <td><code>norm.rainfall</code></td>
+                                <td>Normalized rainfall saturation ratio</td>
+                                <td>Unitless</td>
+                                <td>$[0, 1)$</td>
+                                <td>$\frac{R}{R + 150}$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(m\)</strong></td>
+                                <td><code>soilMoisture</code></td>
+                                <td>Antecedent soil saturation index</td>
+                                <td>Index</td>
+                                <td>$[0.0, 1.0]$</td>
+                                <td><code>0.5</code> ($0=\text{dry}, 1=\text{sat}$)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(p\)</strong></td>
+                                <td><code>waterProximity</code></td>
+                                <td>Distance exposure to rivers, lakes, coastlines</td>
+                                <td>Index</td>
+                                <td>$[0.0, 1.0]$</td>
+                                <td>Zone rating $(1-5) \div 5$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(d\)</strong></td>
+                                <td><code>drainage</code></td>
+                                <td>Culvert and municipal drainage capacity</td>
+                                <td>Index</td>
+                                <td>$[0.0, 1.0]$</td>
+                                <td><code>0.5</code> ($0=\text{poor}, 1=\text{opt}$)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(h\)</strong></td>
+                                <td><code>handExposure</code></td>
+                                <td>Topographic elevation safety factor (HAND)</td>
+                                <td>Index</td>
+                                <td>$[0.0, 1.0]$</td>
+                                <td>$\frac{\text{elev}-1}{4}$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(l\)</strong></td>
+                                <td><code>permeability</code></td>
+                                <td>Ground surface infiltration porousness</td>
+                                <td>Index</td>
+                                <td>$[0.0, 1.0]$</td>
+                                <td><code>0.5</code> ($0=\text{paved}, 1=\text{forest}$)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(\Delta R\)</strong></td>
+                                <td><code>deltaR</code></td>
+                                <td>Positive rate of rainfall accumulation change</td>
+                                <td>$\text{mm/event}$</td>
+                                <td>$[0, \infty)$</td>
+                                <td>$\max(0, R_t - R_{t-1})$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(Q_0\)</strong></td>
+                                <td><code>Q0</code></td>
+                                <td>Rainfall rate half-saturation constant</td>
+                                <td>$\text{mm/event}$</td>
+                                <td>$(0, \infty)$</td>
+                                <td><code>50 mm/event</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(q\)</strong></td>
+                                <td><code>norm.rainfallRate</code></td>
+                                <td>Normalized flash cloudburst acceleration ratio</td>
+                                <td>Unitless</td>
+                                <td>$[0, 1)$</td>
+                                <td>$\frac{\Delta R}{\Delta R + 50}$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(\alpha, \beta, \gamma, \delta, \epsilon, \eta\)</strong></td>
+                                <td><code>exponents</code></td>
+                                <td>Component curvature & power exponents</td>
+                                <td>Parameters</td>
+                                <td>$(0, \infty)$</td>
+                                <td><code>1.5, 2.0, 2.0, 1.5, 2.0, 1.2</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>\(w_{RM}, w_W, w_T, w_D\)</strong></td>
+                                <td><code>weights</code></td>
+                                <td>Proportional component contribution weights</td>
+                                <td>Weights</td>
+                                <td>$[0, 1], \sum w_i = 1$</td>
+                                <td><code>0.40, 0.25, 0.20, 0.15</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 4: Normalization Layer -->
+            <section class="content-card" id="normalization-layer">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-sliders"></i></div>
+                    <h2>4. Normalization Layer & Transfer Functions</h2>
+                </div>
+
+                <p>
+                    A foundational innovation of MCFRI-V2 is its strict <strong>Normalization Pipeline</strong>. In V1, multiplying raw units (e.g. $300\text{mm}^{2.1} \times e^{2 \times 5}$) caused astronomical mathematical overflow ($> 10^{10}$) requiring artificial scaling divisors. In V2, every input is bounded in $[0, 1]$ before exponentiation:
+                </p>
+
+                <div class="step-container">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Michaelis-Menten Rainfall Saturation: \(r = \frac{R}{R + R_0}\)</div>
+                            <div class="step-desc">
+                                Maps unbounded rainfall $R \in [0, \infty)$ to $[0, 1)$. When $R = 0\text{mm} \implies r = 0$. When $R = 150\text{mm} (R_0) \implies r = 0.5$. When $R \to \infty \implies r \to 1.0$.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Rectified Acceleration Transfer: \(q = \frac{\max(0, \Delta R)}{\max(0, \Delta R) + Q_0}\)</div>
+                            <div class="step-desc">
+                                Half-wave rectifies rainfall rates. If rain is receding or steady ($\Delta R \le 0$), $q = 0.0$. Cloudburst surges asymptotically approach $1.0$.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Unit Linear Clamping: \(x_{\text{norm}} = \max(0, \min(1, x))\)</div>
+                            <div class="step-desc">
+                                Enforces strict boundary safety across soil moisture ($m$), drainage ($d$), permeability ($l$), and HAND topography ($h$).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Classification Tiers -->
+            <section class="content-card" id="thresholds-tiers">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h2>5. Risk Classification Tiers & Operational Actions</h2>
+                </div>
+
+                <div class="threshold-graphic">
+                    <div class="scale-bar">
+                        <div class="scale-segment scale-safe">SAFE (0 – 79)</div>
+                        <div class="scale-segment scale-warn">WARNING (80 – 140)</div>
+                        <div class="scale-segment scale-danger">DANGER (&gt; 140)</div>
+                    </div>
+                    <div class="scale-ticks">
+                        <span>0.0</span>
+                        <span>80.0</span>
+                        <span>140.0</span>
+                        <span>200.0</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Risk Tier</th>
+                                <th>Score Range</th>
+                                <th>Color / Fill</th>
+                                <th>Hydrologic Meaning</th>
+                                <th>Automated Emergency Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong style="color: var(--safe);"><i class="fa-solid fa-circle-check"></i> SAFE</strong></td>
+                                <td>$0 \le S < 80$</td>
+                                <td><code>#22c55e</code> (12% fill)</td>
+                                <td>Infiltration capacity exceeds precipitation; culverts handle discharge.</td>
+                                <td>Normal routine monitoring; all evacuation routes open.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--warn);"><i class="fa-solid fa-triangle-exclamation"></i> WARNING</strong></td>
+                                <td>$80 \le S \le 140$</td>
+                                <td><code>#f59e0b</code> (20% fill)</td>
+                                <td>Ground nearing saturation; localized street waterlogging beginning.</td>
+                                <td>Stage rescue personnel; advise packing emergency supplies; issue alerts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--danger);"><i class="fa-solid fa-skull-crossbones"></i> DANGER</strong></td>
+                                <td>$S > 140$</td>
+                                <td><code>#ef4444</code> (30% fill)</td>
+                                <td>Severe flood inundation; structural threat; overflow of channels.</td>
+                                <td>Mandatory evacuation; roads in zone blacklisted; SOS priority elevated.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 6: Secondary Pipeline -->
+            <section class="content-card" id="secondary-pipeline">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                    <h2>6. Multi-Stage Secondary Processing Pipeline</h2>
+                </div>
+
+                <p>After evaluating the raw core equation, the engine applies five downstream operational transformations:</p>
+
+                <div class="step-container">
+                    <div class="step-card">
+                        <div class="step-number"><i class="fa-solid fa-shield"></i></div>
+                        <div class="step-content">
+                            <div class="step-title">1. Shelter Protection Field & Dampening</div>
+                            <div class="step-desc">
+                                Zones within $800\text{m}$ of fortified shelters receive up to $-40\text{ pt}$ risk reduction, followed by a $0.80$ dampening multiplier:
+                                $$S_{\text{mitigated}} = (S_{\text{raw}} - \text{Bonus}) \times 0.80$$
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number"><i class="fa-solid fa-water"></i></div>
+                        <div class="step-content">
+                            <div class="step-title">2. Catchment Flood Spillover Propagation</div>
+                            <div class="step-desc">
+                                Danger zones ($S > 140$) bleed $10\%$ of their risk score to adjacent catchments within $2000\text{m}$:
+                                $$\Delta S_{\text{spill}, j} = \sum_{i \ne j, S_i > 140} S_i \times 0.10 \times \left(1 - \frac{\text{dist}(i,j)}{2000\text{m}}\right)$$
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number"><i class="fa-solid fa-circle-nodes"></i></div>
+                        <div class="step-content">
+                            <div class="step-title">3. Dynamic Footprint Radius Expansion</div>
+                            <div class="step-desc">
+                                Visualizes expanding danger footprint on Leaflet maps:
+                                $$R_{\text{visual}} = R_{\text{base}} \times \left(1 + \frac{S_{\text{final}}}{200}\right)$$
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="step-content">
+                            <div class="step-title">4. Future Risk Trajectory Forecasting</div>
+                            <div class="step-desc">
+                                Predicts risk evolution over a 1–6 hour horizon:
+                                $$S_{\text{future}} = \min\left(200, \; S_{\text{final}} + \left(\frac{R}{50}\right) t_h + 10 p t_h\right)$$
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number"><i class="fa-solid fa-brain"></i></div>
+                        <div class="step-content">
+                            <div class="step-title">5. Adaptive FIFO Weight Memory Updates</div>
+                            <div class="step-desc">
+                                Rolling 5-snapshot buffer adjusts rainfall-moisture sensitivity weights ($\pm 0.01$) during rapid upward or downward trend surges.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Live Interactive Lab -->
+            <section class="lab-container" id="interactive-lab">
+                <div class="lab-header">
+                    <div>
+                        <h2 style="font-family: 'Outfit', sans-serif; color: var(--navy); font-size: 1.6rem;">7. Live Interactive MCFRI-V2 Lab</h2>
+                        <p style="font-size: 0.9rem; color: var(--slate-500);">Tweak inputs below to calculate MCFRI-V2 in real time with step-by-step mathematical decomposition.</p>
+                    </div>
+                    <span class="lab-badge"><i class="fa-solid fa-bolt"></i> Real-Time Evaluator</span>
+                </div>
+
+                <div class="lab-grid">
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-cloud-rain" style="color: var(--primary);"></i> Rainfall (\(R\))</span>
+                                <span class="control-value-display"><span id="lab-r-val">200</span> mm</span>
+                            </div>
+                            <input type="range" id="lab-r" min="0" max="300" step="5" value="200" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-droplet" style="color: #3b82f6;"></i> Soil Moisture (\(m\))</span>
+                                <span class="control-value-display" id="lab-m-val">0.70</span>
+                            </div>
+                            <input type="range" id="lab-m" min="0" max="1" step="0.05" value="0.70" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-water" style="color: var(--accent-cyan);"></i> Water Proximity (\(p\))</span>
+                                <span class="control-value-display" id="lab-p-val">0.80</span>
+                            </div>
+                            <input type="range" id="lab-p" min="0" max="1" step="0.05" value="0.80" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-faucet-drip" style="color: var(--safe);"></i> Drainage Quality (\(d\))</span>
+                                <span class="control-value-display" id="lab-d-val">0.30</span>
+                            </div>
+                            <input type="range" id="lab-d" min="0" max="1" step="0.05" value="0.30" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-mountain" style="color: var(--accent-purple);"></i> Topographic Safety (\(h\))</span>
+                                <span class="control-value-display" id="lab-h-val">0.20</span>
+                            </div>
+                            <input type="range" id="lab-h" min="0" max="1" step="0.05" value="0.20" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-layer-group" style="color: #64748b;"></i> Land Permeability (\(l\))</span>
+                                <span class="control-value-display" id="lab-l-val">0.30</span>
+                            </div>
+                            <input type="range" id="lab-l" min="0" max="1" step="0.05" value="0.30" class="sim-slider">
+                        </div>
+
+                        <div class="control-row">
+                            <div class="control-label-bar">
+                                <span><i class="fa-solid fa-bolt" style="color: var(--warn);"></i> Rate of Rain Change (\(\Delta R\))</span>
+                                <span class="control-value-display"><span id="lab-dr-val">+100</span> mm/ev</span>
+                            </div>
+                            <input type="range" id="lab-dr" min="-50" max="200" step="5" value="100" class="sim-slider">
+                        </div>
+                    </div>
+
+                    <!-- Live Results Panel -->
+                    <div class="result-panel">
+                        <div class="gauge-block">
+                            <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Composite MCFRI-V2 Score</div>
+                            <div class="live-score-val" id="lab-score-display" style="color: #22c55e;">72</div>
+                            <span class="live-tier-badge" id="lab-tier-badge" style="background: #22c55e; color: white;">SAFE</span>
+                        </div>
+
+                        <div class="breakdown-bars-container">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 4px;">Weighted Factor Contributions (\(w_i \cdot F_i \cdot 200\))</div>
+                            
+                            <div class="live-breakdown-row">
+                                <span class="live-bar-label">Rainfall × Moisture</span>
+                                <div class="live-bar-track">
+                                    <div class="live-bar-fill" id="bar-frm" style="width: 41%; background: #3b82f6;"></div>
+                                </div>
+                                <span class="live-bar-val" id="val-frm">16.5</span>
+                            </div>
+
+                            <div class="live-breakdown-row">
+                                <span class="live-bar-label">Water × Drainage</span>
+                                <div class="live-bar-track">
+                                    <div class="live-bar-fill" id="bar-fw" style="width: 47%; background: #06b6d4;"></div>
+                                </div>
+                                <span class="live-bar-val" id="val-fw">18.7</span>
+                            </div>
+
+                            <div class="live-breakdown-row">
+                                <span class="live-bar-label">Topography × LandUse</span>
+                                <div class="live-bar-track">
+                                    <div class="live-bar-fill" id="bar-ft" style="width: 45%; background: #8b5cf6;"></div>
+                                </div>
+                                <span class="live-bar-val" id="val-ft">17.9</span>
+                            </div>
+
+                            <div class="live-breakdown-row">
+                                <span class="live-bar-label">Rainfall Acceleration</span>
+                                <div class="live-bar-track">
+                                    <div class="live-bar-fill" id="bar-fdelta" style="width: 46%; background: #f59e0b;"></div>
+                                </div>
+                                <span class="live-bar-val" id="val-fdelta">18.4</span>
+                            </div>
+                        </div>
+
+                        <div class="live-explain-box" id="lab-explain-text">
+                            Risk is primarily driven by water proximity with poor drainage, with secondary contribution from rapid rainfall acceleration.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 8: Worked Numerical Example -->
+            <section class="content-card" id="worked-example">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-calculator"></i></div>
+                    <h2>8. Step-by-Step Worked Numerical Example</h2>
+                </div>
+
+                <div class="callout callout-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="callout-title">UNVALIDATED DEMONSTRATION RECORD</div>
+                        <div class="callout-body">
+                            The following step-by-step arithmetic trace walks through how the engine evaluates the equation given concrete numbers.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Input Parameters</div>
+                            <div class="step-desc">
+                                $R = 200\text{mm}, \; m = 0.70, \; p = 0.80, \; d = 0.30, \; h = 0.20, \; l = 0.30, \; \Delta R = 100\text{mm/event}$<br>
+                                Exponents: $\alpha=1.5, \beta=2.0, \gamma=2.0, \delta=1.5, \epsilon=2.0, \eta=1.2$<br>
+                                Half-Saturations: $R_0 = 150\text{mm}, \; Q_0 = 50\text{mm/event}$<br>
+                                Weights: $w_{RM} = 0.40, \; w_W = 0.25, \; w_T = 0.20, \; w_D = 0.15$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Normalization Transfer</div>
+                            <div class="step-desc">
+                                $$r = \frac{200}{200 + 150} = \frac{4}{7} \approx \mathbf{0.5714}$$
+                                $$q = \frac{100}{100 + 50} = \frac{2}{3} \approx \mathbf{0.6667}$$
+                                $$(1 - d) = 0.70, \quad (1 - h) = 0.80, \quad (1 - l) = 0.70$$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Component Factor Evaluations</div>
+                            <div class="step-desc">
+                                $$F_{RM} = (0.5714)^{1.5} \times \left(\frac{e^{1.4} - 1}{e^{2.0} - 1}\right) = 0.4320 \times 0.4782 = \mathbf{0.2066}$$
+                                $$F_W = (0.80)^{2.0} \times (0.70)^{1.5} = 0.6400 \times 0.5857 = \mathbf{0.3748}$$
+                                $$F_T = (0.80)^{2.0} \times (0.70) = 0.6400 \times 0.7000 = \mathbf{0.4480}$$
+                                $$F_\Delta = (0.6667)^{1.2} = \mathbf{0.6147}$$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Weighted Aggregation & Final Score</div>
+                            <div class="step-desc">
+                                $$\text{Weighted Sum} = (0.40 \times 0.2066) + (0.25 \times 0.3748) + (0.20 \times 0.4480) + (0.15 \times 0.6147)$$
+                                $$= 0.0826 + 0.0937 + 0.0896 + 0.0922 = \mathbf{0.3581}$$
+                                $$S_{\text{raw}} = 200 \times 0.3581 = \mathbf{71.62} \implies \mathbf{72} \quad \text{(Tier: SAFE)}$$
+                                *(With optional 0.8 shelter dampening: $S = 57$)*
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 9: Validation Protocol -->
+            <section class="content-card" id="validation-protocol">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h2>9. Mathematical / Software Integrity Tests</h2>
+                </div>
+
+                <p>
+                    MCFRI-V2 includes both an automated test suite (<code>mcfriV2Tests.js</code>) and a dataset validation tool (<code>mcfriV2Validator.js</code>).
+                </p>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Test ID</th>
+                                <th>Test Purpose</th>
+                                <th>Target Condition</th>
+                                <th>Mathematical Integrity Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>TEST_A</code></td>
+                                <td>Safe Baseline</td>
+                                <td>Low rain (10mm), dry soil (0.1), good drainage (0.9) $\implies S < 40$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Score: 3)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_B</code></td>
+                                <td>Severe Inundation</td>
+                                <td>High rain (280mm), saturated soil (0.95), poor drainage (0.1) $\implies S > 120$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Score: 139)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_C</code></td>
+                                <td>Flash Acceleration</td>
+                                <td>$\Delta R = +200\text{mm} \implies F_\Delta > 0.30$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (\(F_\Delta = 0.765\))</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_D</code></td>
+                                <td>Drainage Mitigation</td>
+                                <td>Excellent drainage ($d=0.95$) $\implies F_W < 0.05$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (\(F_W = 0.011\))</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_E</code></td>
+                                <td>Land Imperviousness</td>
+                                <td>Impervious ($l=0.05$) vs Permeable ($l=0.90$) $\implies 9.5\times$ risk ratio</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (9.5x Ratio)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_F</code></td>
+                                <td>Falling Rainfall Filter</td>
+                                <td>Receding rain ($\Delta R = -50\text{mm}$) $\implies F_\Delta = 0$ exactly</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (\(F_\Delta = 0.000\))</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_G</code></td>
+                                <td>Boundary Clamping</td>
+                                <td>Inputs $R=9999, m=5, d=-1 \implies S \in [0, 200]$ strictly</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Bounded)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_H</code></td>
+                                <td>Weight Unity Guard</td>
+                                <td>$\sum w_i = 1.0 \pm 10^{-6}$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Sum = 1.000000)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_I</code></td>
+                                <td>Schema & NaN Sanity</td>
+                                <td>140 numeric fields checked; zero NaN or Infinity values</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (100% Valid)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 10: Code Reproduction -->
+            <section class="content-card" id="code-reproduction">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-code"></i></div>
+                    <h2>10. Implementation Reference Code</h2>
+                </div>
+
+                <p>Use this standalone implementation script to reproduce the calculation in JavaScript or Node.js:</p>
+
+                <div class="code-box">
+<span class="kw">function</span> <span class="fn">computeMCFRIV2</span>({
+    R = <span class="num">200</span>, m = <span class="num">0.7</span>, p = <span class="num">0.8</span>, d = <span class="num">0.3</span>, h = <span class="num">0.2</span>, l = <span class="num">0.3</span>, deltaR = <span class="num">100</span>,
+    R0 = <span class="num">150</span>, Q0 = <span class="num">50</span>,
+    alpha = <span class="num">1.5</span>, beta = <span class="num">2.0</span>, gamma = <span class="num">2.0</span>, delta = <span class="num">1.5</span>, epsilon = <span class="num">2.0</span>, eta = <span class="num">1.2</span>,
+    wRM = <span class="num">0.40</span>, wW = <span class="num">0.25</span>, wT = <span class="num">0.20</span>, wD = <span class="num">0.15</span>
+}) {
+    <span class="cm">// 1. Normalization Layer</span>
+    <span class="kw">const</span> r = R / (R + R0);
+    <span class="kw">const</span> mNorm = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">1</span>, m));
+    <span class="kw">const</span> pNorm = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">1</span>, p));
+    <span class="kw">const</span> dNorm = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">1</span>, d));
+    <span class="kw">const</span> hNorm = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">1</span>, h));
+    <span class="kw">const</span> lNorm = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">1</span>, l));
+    <span class="kw">const</span> q = Math.<span class="fn">max</span>(<span class="num">0</span>, deltaR) / (Math.<span class="fn">max</span>(<span class="num">0</span>, deltaR) + Q0);
+
+    <span class="cm">// 2. Non-Linear Components</span>
+    <span class="kw">const</span> FRM = Math.<span class="fn">pow</span>(r, alpha) * ((Math.<span class="fn">exp</span>(beta * mNorm) - <span class="num">1</span>) / (Math.<span class="fn">exp</span>(beta) - <span class="num">1</span>));
+    <span class="kw">const</span> FW = Math.<span class="fn">pow</span>(pNorm, gamma) * Math.<span class="fn">pow</span>(<span class="num">1</span> - dNorm, delta);
+    <span class="kw">const</span> FT = Math.<span class="fn">pow</span>(<span class="num">1</span> - hNorm, epsilon) * (<span class="num">1</span> - lNorm);
+    <span class="kw">const</span> FDelta = Math.<span class="fn">pow</span>(q, eta);
+
+    <span class="cm">// 3. Weighted Aggregation & Bounding [0, 200]</span>
+    <span class="kw">const</span> rawScore = <span class="num">200</span> * (wRM * FRM + wW * FW + wT * FT + wD * FDelta);
+    <span class="kw">const</span> finalScore = Math.<span class="fn">max</span>(<span class="num">0</span>, Math.<span class="fn">min</span>(<span class="num">200</span>, Math.<span class="fn">round</span>(rawScore)));
+
+    <span class="kw">return</span> { finalScore, components: { FRM, FW, FT, FDelta } };
+}
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>AI SafeRoute Disaster Management System</strong> — MCFRI-V2 Technical Study & Reference Dashboard</p>
+        <p style="margin-top: 4px; color: var(--slate-400);">All equations and parameters are development defaults. Calibrate before field deployment.</p>
+    </footer>
+
+    <!-- Interactive Lab Script -->
+    <script>
+        function runLabCalculation() {
+            const R = parseFloat(document.getElementById('lab-r').value);
+            const m = parseFloat(document.getElementById('lab-m').value);
+            const p = parseFloat(document.getElementById('lab-p').value);
+            const d = parseFloat(document.getElementById('lab-d').value);
+            const h = parseFloat(document.getElementById('lab-h').value);
+            const l = parseFloat(document.getElementById('lab-l').value);
+            const deltaR = parseFloat(document.getElementById('lab-dr').value);
+
+            // Display values
+            document.getElementById('lab-r-val').textContent = R;
+            document.getElementById('lab-m-val').textContent = m.toFixed(2);
+            document.getElementById('lab-p-val').textContent = p.toFixed(2);
+            document.getElementById('lab-d-val').textContent = d.toFixed(2);
+            document.getElementById('lab-h-val').textContent = h.toFixed(2);
+            document.getElementById('lab-l-val').textContent = l.toFixed(2);
+            document.getElementById('lab-dr-val').textContent = (deltaR > 0 ? '+' : '') + deltaR;
+
+            // Config constants
+            const R0 = 150, Q0 = 50;
+            const alpha = 1.5, beta = 2.0, gamma = 2.0, delta = 1.5, epsilon = 2.0, eta = 1.2;
+            const wRM = 0.40, wW = 0.25, wT = 0.20, wD = 0.15;
+
+            // Normalization
+            const r = R / (R + R0);
+            const mNorm = Math.max(0, Math.min(1, m));
+            const pNorm = Math.max(0, Math.min(1, p));
+            const dNorm = Math.max(0, Math.min(1, d));
+            const hNorm = Math.max(0, Math.min(1, h));
+            const lNorm = Math.max(0, Math.min(1, l));
+            const q = Math.max(0, deltaR) / (Math.max(0, deltaR) + Q0);
+
+            // Components
+            const FRM = Math.pow(r, alpha) * ((Math.exp(beta * mNorm) - 1) / (Math.exp(beta) - 1));
+            const FW = Math.pow(pNorm, gamma) * Math.pow(1 - dNorm, delta);
+            const FT = Math.pow(1 - hNorm, epsilon) * (1 - lNorm);
+            const FDelta = Math.pow(q, eta);
+
+            // Contributions
+            const cRM = wRM * FRM * 200;
+            const cW = wW * FW * 200;
+            const cT = wT * FT * 200;
+            const cD = wD * FDelta * 200;
+
+            const totalScore = Math.max(0, Math.min(200, Math.round(cRM + cW + cT + cD)));
+
+            // Update UI Score & Tier
+            const scoreEl = document.getElementById('lab-score-display');
+            const badgeEl = document.getElementById('lab-tier-badge');
+            scoreEl.textContent = totalScore;
+
+            if (totalScore > 140) {
+                scoreEl.style.color = '#ef4444';
+                badgeEl.style.background = '#ef4444';
+                badgeEl.textContent = 'DANGER';
+            } else if (totalScore >= 80) {
+                scoreEl.style.color = '#f59e0b';
+                badgeEl.style.background = '#f59e0b';
+                badgeEl.textContent = 'WARNING';
+            } else {
+                scoreEl.style.color = '#10b981';
+                badgeEl.style.background = '#10b981';
+                badgeEl.textContent = 'SAFE';
+            }
+
+            // Update Breakdown Bars (Normalized to 80 max scale per bar for visualization)
+            const maxBar = 50;
+            document.getElementById('bar-frm').style.width = Math.min(100, (cRM / maxBar) * 100) + '%';
+            document.getElementById('val-frm').textContent = cRM.toFixed(1);
+
+            document.getElementById('bar-fw').style.width = Math.min(100, (cW / maxBar) * 100) + '%';
+            document.getElementById('val-fw').textContent = cW.toFixed(1);
+
+            document.getElementById('bar-ft').style.width = Math.min(100, (cT / maxBar) * 100) + '%';
+            document.getElementById('val-ft').textContent = cT.toFixed(1);
+
+            document.getElementById('bar-fdelta').style.width = Math.min(100, (cD / maxBar) * 100) + '%';
+            document.getElementById('val-fdelta').textContent = cD.toFixed(1);
+
+            // Deterministic explanation
+            const contribs = [
+                { name: 'rainfall volume & soil saturation', val: cRM },
+                { name: 'water proximity with drainage deficit', val: cW },
+                { name: 'topographic exposure & paved impermeability', val: cT },
+                { name: 'flash rainfall rate acceleration', val: cD },
+            ].sort((a, b) => b.val - a.val);
+
+            const primary = contribs[0];
+            const secondary = contribs[1];
+            let explain = `Risk is primarily driven by <strong>${primary.name}</strong> (${primary.val.toFixed(1)} pts)`;
+            if (secondary.val > 5) {
+                explain += `, with notable contribution from <strong>${secondary.name}</strong> (${secondary.val.toFixed(1)} pts)`;
+            }
+            explain += '.';
+            document.getElementById('lab-explain-text').innerHTML = explain;
+        }
+
+        // Attach event listeners
+        ['lab-r', 'lab-m', 'lab-p', 'lab-d', 'lab-h', 'lab-l', 'lab-dr'].forEach(id => {
+            document.getElementById(id).addEventListener('input', runLabCalculation);
+        });
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', runLabCalculation);
+    </script>
+</body>
+</html>

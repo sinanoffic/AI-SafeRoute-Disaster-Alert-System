@@ -25,9 +25,10 @@ const AppState = {
     routeExplanation: '',
     shelterFilter: 'All',  // Default filter
     timeHorizon: 0,        // V3: Future prediction window (0-6 hours)
-    moisture: 0.5,         // MCFRI: Soil Moisture (0-1)
-    drainage: 5,           // MCFRI: Drainage Quality (1-10)
-    permeability: 0.5,     // MCFRI: Land Use Permeability (0.1-1.0)
+    moisture: 0.5,         // MCFRI-V2: Soil Moisture (0-1)
+    drainage: 0.5,         // MCFRI-V2: Drainage Quality (0-1, 0=poor, 1=excellent)
+    permeability: 0.5,     // MCFRI-V2: Land Permeability (0-1, 0=impervious, 1=permeable)
+    handExposure: 0.5,     // MCFRI-V2: Topographic Exposure (0-1, 0=exposed, 1=safe)
     previousRainfall: 0,   // For ΔR/Δt calculation
 };
 
@@ -235,19 +236,31 @@ if (moistureSlider) {
     });
 }
 
-// MCFRI: Drainage Slider
+// MCFRI-V2: Drainage Slider (0-1)
 const drainageSlider = document.getElementById('drainage-slider');
 const drainageVal = document.getElementById('drainage-val');
 if (drainageSlider) {
     drainageSlider.addEventListener('input', () => {
-        const val = parseInt(drainageSlider.value);
+        const val = parseFloat(drainageSlider.value);
         AppState.drainage = val;
         drainageVal.textContent = val;
         StateManager.updateSystemState();
     });
 }
 
-// MCFRI: Permeability Slider
+// MCFRI-V2: Topographic Exposure (HAND) Slider (0-1) — NEW
+const handSlider = document.getElementById('hand-slider');
+const handVal = document.getElementById('hand-val');
+if (handSlider) {
+    handSlider.addEventListener('input', () => {
+        const val = parseFloat(handSlider.value);
+        AppState.handExposure = val;
+        handVal.textContent = val;
+        StateManager.updateSystemState();
+    });
+}
+
+// MCFRI-V2: Permeability Slider (0-1)
 const permeabilitySlider = document.getElementById('permeability-slider');
 const permeabilityVal = document.getElementById('permeability-val');
 if (permeabilitySlider) {
@@ -257,6 +270,18 @@ if (permeabilitySlider) {
         permeabilityVal.textContent = val;
         StateManager.updateSystemState();
     });
+}
+
+// V2: Toggle Risk Breakdown panel
+function toggleBreakdown() {
+    const panel = document.getElementById('breakdown-panel');
+    const chevron = document.getElementById('breakdown-chevron');
+    if (panel) {
+        panel.classList.toggle('hidden');
+        if (chevron) {
+            chevron.style.transform = panel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+    }
 }
 
 // V3: Time Horizon Slider

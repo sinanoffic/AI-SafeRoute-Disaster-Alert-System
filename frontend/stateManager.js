@@ -12,14 +12,15 @@ const StateManager = (() => {
         const timeHorizon = AppState.timeHorizon || 0;
         const deltaR = AppState.rainfall - (AppState.previousRainfall || 0);
 
-        // V3 Pipeline: Full simulation (MCFRI → spillover → radius → future → adapt)
+        // V2 Pipeline: Full simulation (MCFRI-V2 → spillover → radius → future → adapt)
         const zones = RiskEngine.runFullSimulation(
             AppState.rainfall, 
             timeHorizon,
             AppState.moisture !== undefined ? AppState.moisture : 0.5,
-            AppState.drainage !== undefined ? AppState.drainage : 5,
+            AppState.drainage !== undefined ? AppState.drainage : 0.5,
             AppState.permeability !== undefined ? AppState.permeability : 0.5,
-            deltaR
+            deltaR,
+            AppState.handExposure !== undefined ? AppState.handExposure : 0.5
         );
         AppState.computedZones = zones;
 
@@ -152,11 +153,51 @@ const StateManager = (() => {
             `;
         }).join('');
 
-        // Adaptive weights indicator
+        // V2: Adaptive weights indicator
         const weightsEl = document.getElementById('adaptive-weights');
         if (weightsEl) {
-            weightsEl.innerHTML = `<span>AI Weights: R×${adaptive.rainfallWeight.toFixed(4)} | W×${adaptive.proximityWeight.toFixed(2)} | E×${adaptive.elevationWeight.toFixed(1)}</span>`;
+            weightsEl.innerHTML = `<span>AI Weights: wRM×${adaptive.wRM.toFixed(2)} | wW×${adaptive.wW.toFixed(2)} | wT×${adaptive.wT.toFixed(2)} | wD×${adaptive.wD.toFixed(2)}</span>`;
         }
+
+        // V2: Risk Breakdown Panel
+        const breakdownPanel = document.getElementById('breakdown-panel');
+        if (breakdownPanel && zones.length > 0) {
+            // Find the zone with highest risk for breakdown display
+            const topZone = zones.reduce((a, b) => a.riskScore > b.riskScore ? a : b);
+            if (topZone.components) {
+                const c = topZone.components;
+                const w = topZone.weights;
+                const maxContrib = Math.max(
+                    c.rainfallMoisture * w.rainfallMoisture,
+                    c.waterDrainage * w.waterDrainage,
+                    c.topographicLandUse * w.topographicLandUse,
+                    c.rainfallAcceleration * w.rainfallAcceleration,
+                    0.01
+                );
+
+                breakdownPanel.innerHTML = `
+                    <div class="breakdown-zone-label">${topZone.label} (Score: ${topZone.riskScore})</div>
+                    ${renderBreakdownBar('Rainfall × Moisture', c.rainfallMoisture * w.rainfallMoisture, maxContrib, '#3b82f6')}
+                    ${renderBreakdownBar('Water × Drainage', c.waterDrainage * w.waterDrainage, maxContrib, '#06b6d4')}
+                    ${renderBreakdownBar('Topographic × LandUse', c.topographicLandUse * w.topographicLandUse, maxContrib, '#8b5cf6')}
+                    ${renderBreakdownBar('Rainfall Acceleration', c.rainfallAcceleration * w.rainfallAcceleration, maxContrib, '#f59e0b')}
+                    ${topZone.explanation ? `<div class="breakdown-explanation">${topZone.explanation}</div>` : ''}
+                `;
+            }
+        }
+    }
+
+    function renderBreakdownBar(label, value, maxValue, color) {
+        const pct = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
+        return `
+            <div class="breakdown-row">
+                <span class="breakdown-label">${label}</span>
+                <div class="breakdown-bar-bg">
+                    <div class="breakdown-bar-fill" style="width:${pct}%; background:${color};"></div>
+                </div>
+                <span class="breakdown-value">${(value * 200).toFixed(1)}</span>
+            </div>
+        `;
     }
 
     // Periodic SOS priority refresh (every 30s)

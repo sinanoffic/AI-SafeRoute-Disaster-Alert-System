@@ -28,7 +28,7 @@
             <section id="page-dashboard" class="page active">
                 <header class="page-header">
                     <div class="header-titles">
-                        <h1>AI SafeRoute <span class="v2-badge">V2</span></h1>
+                        <h1>AI SafeRoute <span class="v2-badge">V2</span> <span class="v2-badge" style="background: #f59e0b; color: #78350f; font-size: 0.55rem;">Development Model</span></h1>
                         <p>Intelligent Risk-Aware Evacuation</p>
                     </div>
                     <div class="intel-indicator">
@@ -121,8 +121,8 @@
                 </header>
                 
                 <div class="simulator-card">
-                    <h3><i class="fa-solid fa-brain"></i> Predictive Risk Engine <span class="v3-tag">V3</span></h3>
-                    <p>Non-linear simulation with flood spillover, future prediction, and adaptive AI weights.</p>
+                    <h3><i class="fa-solid fa-brain"></i> Predictive Risk Engine <span class="v3-tag">V2</span></h3>
+                    <p>MCFRI-V2 — Normalized non-linear simulation with flood spillover, future prediction, and adaptive AI weights.</p>
                     
                     <!-- Rainfall Slider -->
                     <div class="slider-container">
@@ -156,29 +156,42 @@
                         </div>
                     </div>
 
-                    <!-- Drainage Slider -->
+                    <!-- Drainage Slider (V2: normalized 0-1) -->
                     <div class="slider-container">
                         <div class="slider-label-row">
-                            <span class="slider-label-title"><i class="fa-solid fa-water"></i> Drainage Quality (D)</span>
-                            <span class="slider-label-value"><span id="drainage-val">5</span></span>
+                            <span class="slider-label-title"><i class="fa-solid fa-water"></i> Drainage Quality (d)</span>
+                            <span class="slider-label-value"><span id="drainage-val">0.5</span></span>
                         </div>
-                        <input type="range" id="drainage-slider" min="1" max="10" step="1" value="5" class="styled-slider">
+                        <input type="range" id="drainage-slider" min="0" max="1" step="0.1" value="0.5" class="styled-slider">
                         <div class="slider-labels">
-                            <span>1 (Poor)</span>
-                            <span>10 (Excellent)</span>
+                            <span>0 (Poor)</span>
+                            <span>1 (Excellent)</span>
                         </div>
                     </div>
 
-                    <!-- Permeability Slider -->
+                    <!-- Topographic Exposure Slider (V2: new) -->
                     <div class="slider-container">
                         <div class="slider-label-row">
-                            <span class="slider-label-title"><i class="fa-solid fa-layer-group"></i> Land Use Permeability (L)</span>
+                            <span class="slider-label-title"><i class="fa-solid fa-mountain"></i> Topographic Exposure (h)</span>
+                            <span class="slider-label-value"><span id="hand-val">0.5</span></span>
+                        </div>
+                        <input type="range" id="hand-slider" min="0" max="1" step="0.1" value="0.5" class="styled-slider">
+                        <div class="slider-labels">
+                            <span>0 (Exposed)</span>
+                            <span>1 (Safe)</span>
+                        </div>
+                    </div>
+
+                    <!-- Permeability Slider (V2: normalized 0-1) -->
+                    <div class="slider-container">
+                        <div class="slider-label-row">
+                            <span class="slider-label-title"><i class="fa-solid fa-layer-group"></i> Land Permeability (l)</span>
                             <span class="slider-label-value"><span id="permeability-val">0.5</span></span>
                         </div>
-                        <input type="range" id="permeability-slider" min="0.1" max="1.0" step="0.1" value="0.5" class="styled-slider">
+                        <input type="range" id="permeability-slider" min="0" max="1" step="0.1" value="0.5" class="styled-slider">
                         <div class="slider-labels">
-                            <span>0.1 (Concrete)</span>
-                            <span>1.0 (Forest)</span>
+                            <span>0 (Impervious)</span>
+                            <span>1 (Permeable)</span>
                         </div>
                     </div>
 
@@ -208,6 +221,15 @@
                         <div id="adaptive-weights" class="adaptive-weights"></div>
                     </div>
 
+                    <!-- V2: Risk Breakdown Panel (expandable) -->
+                    <div class="risk-breakdown-section">
+                        <button class="breakdown-toggle" id="breakdown-toggle" onclick="toggleBreakdown()">
+                            <i class="fa-solid fa-chart-pie"></i> Risk Breakdown
+                            <i class="fa-solid fa-chevron-down breakdown-chevron" id="breakdown-chevron"></i>
+                        </button>
+                        <div class="breakdown-panel hidden" id="breakdown-panel"></div>
+                    </div>
+
                     <!-- Risk Thresholds -->
                     <div class="sim-formula">
                         <h4>Risk Thresholds</h4>
@@ -215,6 +237,9 @@
                             <span class="t-safe">&lt;80 Safe</span>
                             <span class="t-warn">80–140 Warning</span>
                             <span class="t-danger">&gt;140 Danger</span>
+                        </div>
+                        <div class="engine-version-label">
+                            MCFRI-V2 — Parameters require empirical calibration
                         </div>
                     </div>
                 </div>
@@ -335,10 +360,13 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <!-- V2 Engine Modules (loaded before app.js) -->
+    <script src="mcfriV2Config.js"></script>
     <script src="riskEngine.js"></script>
     <script src="routingEngine.js"></script>
     <script src="sosEngine.js"></script>
     <script src="stateManager.js"></script>
+    <script src="mcfriV2Validator.js"></script>
+    <script src="mcfriV2Tests.js"></script>
     
     <!-- Main App -->
     <script src="app.js"></script>

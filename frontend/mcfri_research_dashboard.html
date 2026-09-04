@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCFRI-V2 Research Platform | AI SafeRoute</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- MathJax 3 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #60a5fa;
+            --navy: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+            --safe: #10b981;
+            --safe-bg: #ecfdf5;
+            --safe-border: #a7f3d0;
+            --warn: #f59e0b;
+            --warn-bg: #fffbeb;
+            --warn-border: #fde68a;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: var(--slate-800);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--slate-200);
+            padding: 0.85rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-brand {
+            display: flex; align-items: center; gap: 12px;
+            text-decoration: none; color: var(--navy);
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.25rem;
+        }
+        .nav-badge {
+            background: #dbeafe; color: var(--primary-dark);
+            font-size: 0.75rem; font-weight: 700; padding: 4px 10px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .nav-badge-amber {
+            background: #fef3c7; color: #92400e;
+        }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--slate-600);
+            font-weight: 600; font-size: 0.9rem; transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* Layout */
+        .page-wrapper {
+            display: flex; max-width: 1440px; margin: 0 auto;
+            padding: 2rem; gap: 2.5rem;
+        }
+        .sidebar {
+            width: 280px; flex-shrink: 0; position: sticky;
+            top: 5rem; height: calc(100vh - 6rem); overflow-y: auto;
+            background: var(--white); border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg); padding: 1.5rem 1.2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .sidebar h4 {
+            font-family: 'Outfit', sans-serif; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--slate-500); margin-bottom: 0.8rem; padding-left: 0.6rem;
+        }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 12px; border-radius: var(--radius-sm);
+            color: var(--slate-700); text-decoration: none;
+            font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
+        }
+        .sidebar-menu a:hover { background: var(--slate-100); color: var(--primary); }
+        .sidebar-menu a.active { background: #eff6ff; color: var(--primary); font-weight: 600; }
+
+        .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2.5rem; }
+
+        /* Hero */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: var(--white); border-radius: var(--radius-xl);
+            padding: 3rem 2.5rem; position: relative; overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        .hero-banner::before {
+            content: ''; position: absolute; top: -50%; right: -20%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+        .hero-banner h1 {
+            font-family: 'Outfit', sans-serif; font-size: 2.2rem;
+            font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem; letter-spacing: -0.5px;
+        }
+        .hero-subtitle { font-size: 1.1rem; color: #dbeafe; max-width: 800px; margin-bottom: 1.5rem; }
+        .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .hero-tag {
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25); color: var(--white);
+            font-size: 0.82rem; font-weight: 600; padding: 6px 14px;
+            border-radius: 20px; display: flex; align-items: center; gap: 6px;
+        }
+        .hero-tag-amber {
+            background: rgba(245,158,11,0.35);
+            border: 1px solid rgba(245,158,11,0.55);
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: var(--white); border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg); padding: 2.2rem; box-shadow: var(--shadow-sm);
+        }
+        .section-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 2px solid var(--slate-100);
+        }
+        .section-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: #eff6ff; color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        }
+        .section-icon-amber { background: #fef3c7; color: #b45309; }
+        .section-icon-green { background: #ecfdf5; color: #059669; }
+        .section-icon-purple { background: #f3e8ff; color: #7c3aed; }
+        .section-icon-cyan { background: #ecfeff; color: #0891b2; }
+        .section-icon-red { background: #fef2f2; color: #dc2626; }
+        .section-header h2 {
+            font-family: 'Outfit', sans-serif; font-size: 1.5rem;
+            font-weight: 700; color: var(--navy);
+        }
+
+        /* Callout Boxes */
+        .callout {
+            border-radius: var(--radius-md); padding: 1.2rem 1.5rem;
+            margin: 1.2rem 0; display: flex; gap: 14px; align-items: flex-start;
+        }
+        .callout-warning { background: var(--warn-bg); border-left: 4px solid var(--warn); color: #92400e; }
+        .callout-info { background: #eff6ff; border-left: 4px solid var(--primary); color: #1e40af; }
+        .callout-success { background: var(--safe-bg); border-left: 4px solid var(--safe); color: #065f46; }
+        .callout-danger { background: var(--danger-bg); border-left: 4px solid var(--danger); color: #991b1b; }
+        .callout i { font-size: 1.25rem; margin-top: 2px; }
+        .callout-title { font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+        .callout-body { font-size: 0.9rem; line-height: 1.55; }
+
+        /* Equation Display */
+        .equation-card {
+            background: #0f172a; color: #f8fafc; border-radius: var(--radius-md);
+            padding: 1.8rem; margin: 1.2rem 0; text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); position: relative;
+        }
+        .equation-title {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #94a3b8; margin-bottom: 0.8rem;
+            font-family: 'Outfit', sans-serif; font-weight: 600;
+        }
+
+        /* Component Grid */
+        .comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+        .comp-card {
+            background: var(--slate-50); border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md); padding: 1.6rem;
+            display: flex; flex-direction: column; gap: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .comp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .comp-header { display: flex; justify-content: space-between; align-items: center; }
+        .comp-title {
+            font-family: 'Outfit', sans-serif; font-size: 1.05rem;
+            font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px;
+        }
+        .comp-weight-pill {
+            background: #dbeafe; color: var(--primary-dark);
+            font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 12px;
+        }
+        .comp-formula-pill {
+            background: #1e293b; color: #f8fafc;
+            padding: 10px 14px; border-radius: 8px; text-align: center; font-size: 1.05rem;
+        }
+        .comp-desc { font-size: 0.88rem; color: var(--slate-600); line-height: 1.5; }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .status-complete { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status-active { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .status-not-started { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto; margin: 1.2rem 0;
+            border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+        }
+        .styled-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; }
+        .styled-table th {
+            background: #f8fafc; color: var(--navy);
+            font-family: 'Outfit', sans-serif; font-weight: 700;
+            padding: 12px 16px; border-bottom: 2px solid var(--slate-200); white-space: nowrap;
+        }
+        .styled-table td {
+            padding: 12px 16px; border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700); vertical-align: top;
+        }
+        .styled-table tbody tr:hover { background: #f8fafc; }
+        .styled-table code {
+            font-family: 'JetBrains Mono', monospace; background: #f1f5f9;
+            color: var(--primary-dark); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem;
+        }
+
+        /* Pipeline Vertical Flow */
+        .pipeline-flow { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 1.5rem 0; }
+        .pipeline-step {
+            background: var(--white); border: 2px solid var(--slate-200);
+            border-radius: var(--radius-md); padding: 12px 28px;
+            font-weight: 600; font-size: 0.92rem; color: var(--navy);
+            text-align: center; min-width: 320px;
+            transition: border-color 0.2s;
+        }
+        .pipeline-step:hover { border-color: var(--primary); }
+        .pipeline-step-active { border-color: var(--primary); background: #eff6ff; }
+        .pipeline-arrow {
+            color: var(--slate-300); font-size: 1.4rem; line-height: 1;
+            padding: 2px 0;
+        }
+
+        /* Data Source Cards */
+        .ds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+        .ds-card {
+            background: var(--white); border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md); padding: 1.5rem;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .ds-card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .ds-card-title {
+            font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 700;
+            color: var(--navy); display: flex; align-items: center; gap: 8px;
+        }
+        .ds-card-title i { color: var(--primary); }
+        .ds-field {
+            display: flex; justify-content: space-between; align-items: baseline;
+            padding: 4px 0; border-bottom: 1px solid var(--slate-100);
+            font-size: 0.85rem;
+        }
+        .ds-field-label { color: var(--slate-500); font-weight: 600; }
+        .ds-field-value { color: var(--navy); font-weight: 500; text-align: right; max-width: 60%; }
+        .ds-note {
+            font-size: 0.8rem; color: var(--slate-500);
+            font-style: italic; margin-top: 4px; line-height: 1.45;
+        }
+
+        /* Schema Code Block */
+        .schema-block {
+            background: #0f172a; color: #e2e8f0; border-radius: var(--radius-md);
+            padding: 1.5rem; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem; line-height: 1.75; overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .schema-comment { color: #64748b; }
+        .schema-type { color: #60a5fa; }
+        .schema-field { color: #34d399; }
+
+        /* Roadmap */
+        .roadmap-list { list-style: none; display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; }
+        .roadmap-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 10px 16px; border-left: 3px solid var(--slate-200);
+            font-size: 0.92rem; transition: all 0.2s;
+        }
+        .roadmap-item:hover { background: var(--slate-50); }
+        .roadmap-num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--slate-100); color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .roadmap-item-done { border-left-color: var(--safe); }
+        .roadmap-item-done .roadmap-num { background: var(--safe-bg); color: var(--safe); }
+        .roadmap-item-active { border-left-color: var(--primary); background: #eff6ff; border-left-width: 4px; }
+        .roadmap-item-active .roadmap-num { background: #dbeafe; color: var(--primary); }
+        .roadmap-item-pending .roadmap-num { background: var(--slate-100); color: var(--slate-400); }
+
+        /* Checklist */
+        .checklist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0.8rem 0; }
+        .checklist li {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.88rem; color: var(--slate-700); padding: 4px 0;
+        }
+        .checklist li i { font-size: 0.9rem; }
+        .check-done { color: var(--safe); }
+        .check-progress { color: var(--primary); }
+        .check-pending { color: var(--slate-300); }
+
+        /* Analysis Grid Card */
+        .grid-spec-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #93c5fd; border-radius: var(--radius-lg);
+            padding: 2rem; text-align: center; margin: 1.5rem 0;
+        }
+        .grid-spec-value {
+            font-family: 'Outfit', sans-serif; font-size: 3.5rem;
+            font-weight: 800; color: var(--primary-dark); letter-spacing: -1px;
+        }
+        .grid-spec-label {
+            font-family: 'Outfit', sans-serif; font-size: 1.1rem;
+            font-weight: 600; color: var(--slate-600); margin-top: 4px;
+        }
+
+        /* Readiness Panel */
+        .readiness-panel {
+            display: grid; grid-template-columns: 200px 1fr; gap: 0;
+            border: 2px solid var(--primary); border-radius: var(--radius-lg);
+            overflow: hidden; margin: 1.5rem 0;
+        }
+        .readiness-stage {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: var(--white); padding: 2rem 1.5rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .readiness-stage-num {
+            font-family: 'Outfit', sans-serif; font-size: 3rem;
+            font-weight: 800; line-height: 1;
+        }
+        .readiness-stage-label {
+            font-size: 0.85rem; font-weight: 600; margin-top: 6px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .readiness-body { padding: 1.5rem 2rem; }
+        .readiness-body h4 {
+            font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--slate-500); margin-bottom: 6px; margin-top: 12px;
+        }
+        .readiness-body h4:first-child { margin-top: 0; }
+
+        /* Footer */
+        footer {
+            background: var(--navy); color: var(--slate-300);
+            padding: 1.5rem 2rem; text-align: center;
+            font-size: 0.85rem; margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .page-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; top: 0; }
+            .comp-grid, .ds-grid { grid-template-columns: 1fr; }
+            .readiness-panel { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <i class="fa-solid fa-route"></i> AI SafeRoute
+            <span class="nav-badge">MCFRI-V2</span>
+            <span class="nav-badge nav-badge-amber">Development Model</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-map"></i> App</a></li>
+            <li><a href="mcfri_study.html"><i class="fa-solid fa-book"></i> Study Dashboard</a></li>
+            <li><a href="mcfri_research_dashboard.html"><i class="fa-solid fa-flask"></i> Research Platform</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Layout -->
+    <div class="page-wrapper">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <h4>Research Platform</h4>
+            <ul class="sidebar-menu">
+                <li><a href="#research-status" class="active"><i class="fa-solid fa-info-circle"></i> Research Status</a></li>
+                <li><a href="#equation-recap"><i class="fa-solid fa-square-root-variable"></i> Equation Architecture</a></li>
+                <li><a href="#data-pipeline"><i class="fa-solid fa-diagram-project"></i> Data Pipeline</a></li>
+                <li><a href="#data-sources"><i class="fa-solid fa-database"></i> Dataset Sources</a></li>
+                <li><a href="#analysis-grid"><i class="fa-solid fa-border-all"></i> Analysis Grid</a></li>
+                <li><a href="#variable-table"><i class="fa-solid fa-table-list"></i> Variable Mapping</a></li>
+                <li><a href="#data-schema"><i class="fa-solid fa-code"></i> Data Schema</a></li>
+                <li><a href="#readiness"><i class="fa-solid fa-clipboard-check"></i> Research Readiness</a></li>
+                <li><a href="#operational-layer"><i class="fa-solid fa-layer-group"></i> Operational Layer</a></li>
+                <li><a href="#integrity-tests"><i class="fa-solid fa-check-double"></i> Integrity Tests</a></li>
+                <li><a href="#roadmap"><i class="fa-solid fa-road"></i> Research Roadmap</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Hero Banner -->
+            <div class="hero-banner" id="top">
+                <h1><i class="fa-solid fa-flask"></i> MCFRI-V2 Research Platform</h1>
+                <p class="hero-subtitle">
+                    Real-world data acquisition, reproducible validation pipeline, and empirical calibration architecture for the Multi-Catchment Flood Risk Index.
+                </p>
+                <div class="hero-tags">
+                    <span class="hero-tag"><i class="fa-solid fa-cube"></i> Development Model</span>
+                    <span class="hero-tag hero-tag-amber"><i class="fa-solid fa-triangle-exclamation"></i> Unvalidated Parameters</span>
+                    <span class="hero-tag"><i class="fa-solid fa-ruler-combined"></i> 250 m Analysis Grid</span>
+                    <span class="hero-tag hero-tag-amber"><i class="fa-solid fa-hourglass-half"></i> Stage 1: Dataset Construction</span>
+                </div>
+            </div>
+
+
+            <!-- ========== SECTION 1: RESEARCH STATUS ========== -->
+            <section class="content-card" id="research-status">
+                <div class="section-header">
+                    <div class="section-icon section-icon-amber"><i class="fa-solid fa-circle-info"></i></div>
+                    <h2>1. Current Research Status</h2>
+                </div>
+
+                <div class="callout callout-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <div class="callout-title">Unvalidated Development Status Notice</div>
+                        <div class="callout-body">
+                            All mathematical equations, power exponents ($\alpha, \beta, \gamma, \delta, \epsilon, \eta$), 
+                            half-saturation constants ($R_0, Q_0$), component weights ($w_{RM}, w_W, w_T, w_D$), and 
+                            classification thresholds documented herein are <strong>UNVALIDATED DEVELOPMENT DEFAULTS</strong>. 
+                            They are engineered to establish mathematically bounded behavior ($S(t) \in [0, 200]$) and verify 
+                            application pipelines. These values must undergo empirical calibration and statistical validation 
+                            against historical observational datasets before operational field deployment.
+                        </div>
+                    </div>
+                </div>
+
+                <p>The table below clearly distinguishes the current status of each component of the MCFRI-V2 system:</p>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Current Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>MCFRI-V2 Mathematical Architecture</strong></td>
+                                <td><span class="status-badge status-complete"><i class="fa-solid fa-circle-check"></i> Defined</span></td>
+                                <td>Four-component non-linear bounded equation fully specified</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Parameter Values</strong></td>
+                                <td><span class="status-badge status-pending"><i class="fa-solid fa-hourglass-half"></i> Development Defaults</span></td>
+                                <td>All exponents, weights, and constants are unvalidated placeholders</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Real-World Calibration</strong></td>
+                                <td><span class="status-badge status-not-started"><i class="fa-solid fa-clock"></i> Not Yet Completed</span></td>
+                                <td>Requires empirical fitting against historical flood observations</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Independent Validation</strong></td>
+                                <td><span class="status-badge status-not-started"><i class="fa-solid fa-clock"></i> Not Yet Completed</span></td>
+                                <td>Requires held-out test events and spatial cross-validation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Operational Thresholds</strong></td>
+                                <td><span class="status-badge status-pending"><i class="fa-solid fa-hourglass-half"></i> Provisional</span></td>
+                                <td>Safe/Warning/Danger boundaries are provisional development values</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Sources</strong></td>
+                                <td><span class="status-badge status-pending"><i class="fa-solid fa-hourglass-half"></i> Selected, Not Connected</span></td>
+                                <td>Sources identified; extraction pipeline not yet operational</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 2: EQUATION RECAP ========== -->
+            <section class="content-card" id="equation-recap">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-square-root-variable"></i></div>
+                    <h2>2. MCFRI-V2 Equation Architecture</h2>
+                </div>
+
+                <div class="callout callout-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="callout-title">Parameter Status: DEVELOPMENT DEFAULT — TO BE EMPIRICALLY ESTIMATED</div>
+                        <div class="callout-body">
+                            The mathematical structure below is the defined MCFRI-V2 architecture. All numerical parameter values 
+                            ($\alpha, \beta, \gamma, \delta, \epsilon, \eta, R_0, Q_0, w_i$) shown are development defaults only. 
+                            They will be replaced with empirically estimated values during the calibration stage.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equation-card">
+                    <div class="equation-title">Master Bounded Equation</div>
+                    <div style="font-size: 1.4rem;">
+                        $$S(t) = 200 \times \Big[ w_{RM} \cdot F_{RM} + w_W \cdot F_W + w_T \cdot F_T + w_\Delta \cdot F_\Delta \Big]$$
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: #94a3b8;">
+                        $S(t) \in [0, 200]$ &nbsp;|&nbsp; $\sum w_i = 1.0$ &nbsp;|&nbsp; Each $F_i \in [0, 1]$
+                    </div>
+                </div>
+
+                <div class="comp-grid">
+                    <!-- FRM -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <span class="comp-title"><i class="fa-solid fa-cloud-rain" style="color: var(--primary);"></i> Rainfall–Moisture ($F_{RM}$)</span>
+                            <span class="comp-weight-pill">$w_{RM} = 0.40$</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $F_{RM} = r^\alpha \cdot \left(\frac{e^{\beta m} - 1}{e^\beta - 1}\right)$
+                        </div>
+                        <p class="comp-desc">Asymptotic rainfall volume coupled exponentially with antecedent soil moisture.</p>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">
+                            $r = R / (R + R_0)$ &nbsp;|&nbsp; $\alpha = 1.5$, $\beta = 2.0$ <span class="status-badge status-pending" style="font-size: 0.65rem; padding: 2px 6px;">DEV DEFAULT</span>
+                        </p>
+                    </div>
+                    <!-- FW -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <span class="comp-title"><i class="fa-solid fa-water" style="color: var(--accent-cyan);"></i> Water / Drainage ($F_W$)</span>
+                            <span class="comp-weight-pill">$w_W = 0.25$</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $F_W = p^\gamma \cdot (1 - d)^\delta$
+                        </div>
+                        <p class="comp-desc">Water proximity compounded by drainage / retention deficit.</p>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">
+                            $\gamma = 2.0$, $\delta = 1.5$ <span class="status-badge status-pending" style="font-size: 0.65rem; padding: 2px 6px;">DEV DEFAULT</span>
+                        </p>
+                    </div>
+                    <!-- FT -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <span class="comp-title"><i class="fa-solid fa-mountain" style="color: var(--safe);"></i> Topography / Land Surface ($F_T$)</span>
+                            <span class="comp-weight-pill">$w_T = 0.20$</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $F_T = (1 - h)^\epsilon \cdot (1 - l)$
+                        </div>
+                        <p class="comp-desc">Topographic basin exposure (HAND) and ground impermeability.</p>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">
+                            $\epsilon = 2.0$ <span class="status-badge status-pending" style="font-size: 0.65rem; padding: 2px 6px;">DEV DEFAULT</span>
+                        </p>
+                    </div>
+                    <!-- FDelta -->
+                    <div class="comp-card">
+                        <div class="comp-header">
+                            <span class="comp-title"><i class="fa-solid fa-bolt" style="color: var(--warn);"></i> Rainfall Acceleration ($F_\Delta$)</span>
+                            <span class="comp-weight-pill">$w_D = 0.15$</span>
+                        </div>
+                        <div class="comp-formula-pill">
+                            $F_\Delta = q^\eta$
+                        </div>
+                        <p class="comp-desc">Half-wave rectified cloudburst surge rate-of-change factor.</p>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">
+                            $q = \max(0, \Delta R) / (\max(0, \Delta R) + Q_0)$ &nbsp;|&nbsp; $\eta = 1.2$ <span class="status-badge status-pending" style="font-size: 0.65rem; padding: 2px 6px;">DEV DEFAULT</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 3: RESEARCH DATA PIPELINE ========== -->
+            <section class="content-card" id="data-pipeline">
+                <div class="section-header">
+                    <div class="section-icon section-icon-purple"><i class="fa-solid fa-diagram-project"></i></div>
+                    <h2>3. MCFRI-V2 Real-World Data Pipeline</h2>
+                </div>
+
+                <div class="callout callout-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="callout-title">Current Pipeline Status</div>
+                        <div class="callout-body">
+                            MCFRI-V2 is currently entering the <strong>empirical dataset-construction stage</strong>. 
+                            The conceptual pipeline below describes the planned end-to-end workflow from raw historical 
+                            flood events to calibrated and independently validated model parameters.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pipeline-flow">
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-water"></i> Historical Flood Event
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-satellite"></i> Flood Observation (Satellite-Derived Target)
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-layer-group"></i> Rainfall + Soil Moisture + Hydrography + Terrain + Land Surface
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step pipeline-step-active">
+                        <i class="fa-solid fa-border-all"></i> 250 m Analysis Grid
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-arrows-to-dot"></i> Spatial / Temporal Collocation
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-filter"></i> Quality Control
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-database"></i> Master Dataset
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-sliders"></i> Parameter Calibration
+                    </div>
+                    <div class="pipeline-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="pipeline-step">
+                        <i class="fa-solid fa-check-double"></i> Independent Validation
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 4: DATASET SOURCES ========== -->
+            <section class="content-card" id="data-sources">
+                <div class="section-header">
+                    <div class="section-icon section-icon-cyan"><i class="fa-solid fa-database"></i></div>
+                    <h2>4. Research Dataset Source Stack</h2>
+                </div>
+
+                <p>The following data products have been selected for the MCFRI-V2 calibration and validation dataset. None are currently connected to a live extraction pipeline.</p>
+
+                <div class="ds-grid">
+
+                    <!-- Flood Target -->
+                    <div class="ds-card" style="border-left: 4px solid var(--danger);">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-bullseye"></i> Flood Target</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Product</span>
+                            <span class="ds-field-value"><strong>Global Flood Database v1</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Role</span>
+                            <span class="ds-field-value">Historical satellite-observed flood target</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Target Variable</span>
+                            <span class="ds-field-value"><code>flood_observed</code></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Resolution</span>
+                            <span class="ds-field-value">250 m</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Historical Period</span>
+                            <span class="ds-field-value">2000–2018</span>
+                        </div>
+                        <p class="ds-note">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: var(--warn);"></i>
+                            This is a historical satellite-observed flood target — NOT perfect ground truth. 
+                            Satellite-derived flood maps have inherent limitations including cloud occlusion, 
+                            temporal sampling gaps, and classification uncertainty.
+                        </p>
+                    </div>
+
+                    <!-- Rainfall -->
+                    <div class="ds-card" style="border-left: 4px solid var(--primary);">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-cloud-rain"></i> Rainfall</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Product</span>
+                            <span class="ds-field-value"><strong>NASA GPM IMERG V07</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Earth Engine Collection</span>
+                            <span class="ds-field-value"><code>NASA/GPM_L3/IMERG_V07</code></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Cadence</span>
+                            <span class="ds-field-value">30 minutes</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">MCFRI Variables</span>
+                            <span class="ds-field-value">$R$ (rainfall), $\Delta R$ (acceleration)</span>
+                        </div>
+                        <p class="ds-note">
+                            Spatial collocation/resampling to the 250 m analysis grid does NOT increase the native spatial resolution of IMERG.
+                        </p>
+                    </div>
+
+                    <!-- Soil Moisture -->
+                    <div class="ds-card" style="border-left: 4px solid #8b5cf6;">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-droplet"></i> Soil Moisture</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Product</span>
+                            <span class="ds-field-value"><strong>ERA5-Land Hourly</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Earth Engine Collection</span>
+                            <span class="ds-field-value"><code>ECMWF/ERA5_LAND/HOURLY</code></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Variable</span>
+                            <span class="ds-field-value"><code>volumetric_soil_water_layer_1</code></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">MCFRI Variable</span>
+                            <span class="ds-field-value">$m$ (antecedent soil moisture)</span>
+                        </div>
+                        <p class="ds-note">
+                            Raw soil moisture will be stored first; empirical/physical normalization to [0, 1] will be 
+                            determined during the calibration-design stage.
+                        </p>
+                    </div>
+
+                    <!-- Terrain / Hydrography -->
+                    <div class="ds-card" style="border-left: 4px solid var(--safe);">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-mountain"></i> Terrain / Hydrography</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Product</span>
+                            <span class="ds-field-value"><strong>MERIT Hydro</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Native Resolution</span>
+                            <span class="ds-field-value">~90 m (3 arc-second)</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">MCFRI Variables</span>
+                            <span class="ds-field-value">HAND, upstream area, drainage network, distance-to-drainage</span>
+                        </div>
+                        <p class="ds-note">
+                            MERIT Hydro is a largely static geospatial predictor — not an event-year-specific dynamic layer. 
+                            Final values are spatially collocated to the 250 m master analysis grid.
+                        </p>
+                    </div>
+
+                    <!-- Surface Retention Proxy -->
+                    <div class="ds-card" style="border-left: 4px solid var(--warn);">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-earth-americas"></i> Drainage / Retention Proxy</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Products</span>
+                            <span class="ds-field-value"><strong>HYSOGs250m + ESA WorldCover</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Role</span>
+                            <span class="ds-field-value">Curve Number / surface runoff-retention proxy</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">MCFRI Variable</span>
+                            <span class="ds-field-value">$d$ (drainage / retention proxy)</span>
+                        </div>
+                        <div class="callout callout-warning" style="margin: 8px 0 0 0; padding: 8px 12px; font-size: 0.82rem;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div class="callout-body">
+                                This does <strong>NOT</strong> directly measure municipal stormwater drainage capacity. 
+                                It is a surface-retention proxy based on hydrologic soil groups and land cover classification.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Built Surface -->
+                    <div class="ds-card" style="border-left: 4px solid #6b7280;">
+                        <div class="ds-card-header">
+                            <span class="ds-card-title"><i class="fa-solid fa-city"></i> Built Surface</span>
+                            <span class="status-badge status-pending"><i class="fa-solid fa-plug-circle-xmark"></i> Not Connected</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Product</span>
+                            <span class="ds-field-value"><strong>GHSL / GHS-BUILT-S</strong></span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">Role</span>
+                            <span class="ds-field-value">Built-up / impervious surface fraction</span>
+                        </div>
+                        <div class="ds-field">
+                            <span class="ds-field-label">MCFRI Variable</span>
+                            <span class="ds-field-value">$l$ (built-up / impervious fraction)</span>
+                        </div>
+                        <p class="ds-note">
+                            GHSL built-up surface product; exact product version and epoch is selected during dataset construction. 
+                            No specific historical epoch is hard-coded.
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 5: 250m ANALYSIS GRID ========== -->
+            <section class="content-card" id="analysis-grid">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-border-all"></i></div>
+                    <h2>5. Master Analysis Grid</h2>
+                </div>
+
+                <div class="grid-spec-card">
+                    <div class="grid-spec-value">250 m</div>
+                    <div class="grid-spec-label">Common Analysis Grid Resolution</div>
+                </div>
+
+                <p>
+                    The flood-observation target (Global Flood Database v1) is available at 250 m. Therefore, the initial 
+                    MCFRI-V2 validation dataset uses a <strong>250 m common analysis grid</strong>. All predictor variables 
+                    are spatially collocated to this grid.
+                </p>
+
+                <div class="callout callout-danger">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <div class="callout-title">Important: Spatial Resolution Warning</div>
+                        <div class="callout-body">
+                            Resampling a coarse environmental product (e.g., IMERG at ~10 km, ERA5-Land at ~9 km) to 250 m 
+                            <strong>does NOT increase its native spatial resolution</strong>. The resampled values are spatially 
+                            smooth — this is spatial collocation, not resolution enhancement. The 250 m grid is chosen to match 
+                            the target variable, not to imply fine-scale predictor detail.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout callout-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="callout-title">MERIT Hydro Resolution Note</div>
+                        <div class="callout-body">
+                            MERIT Hydro's native resolution is ~90 m (3 arc-second). It may remain at 90 m internally during 
+                            preprocessing, but the final aligned analysis dataset is 250 m. Do NOT use a 90 m master analysis 
+                            grid for the validation dataset.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 6: VARIABLE TABLE ========== -->
+            <section class="content-card" id="variable-table">
+                <div class="section-header">
+                    <div class="section-icon section-icon-green"><i class="fa-solid fa-table-list"></i></div>
+                    <h2>6. Research Variable Mapping</h2>
+                </div>
+
+                <p>Mapping between MCFRI-V2 model variables, their raw/derived status, and their role in the final calibration dataset:</p>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>MCFRI Variable</th>
+                                <th>Raw / Derived</th>
+                                <th>Final Dataset Role</th>
+                                <th>Primary Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>$R$</strong></td>
+                                <td>Derived from IMERG</td>
+                                <td>72 h rainfall accumulation</td>
+                                <td><code>NASA/GPM_L3/IMERG_V07</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>$\Delta R$</strong></td>
+                                <td>Derived from IMERG</td>
+                                <td>Maximum positive 3 h rainfall change</td>
+                                <td><code>NASA/GPM_L3/IMERG_V07</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>$m$</strong></td>
+                                <td>Raw first, normalized later</td>
+                                <td>Antecedent soil moisture</td>
+                                <td><code>ECMWF/ERA5_LAND/HOURLY</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>$p$</strong></td>
+                                <td>Derived</td>
+                                <td>Distance-to-drainage exposure</td>
+                                <td>MERIT Hydro</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$d$</strong></td>
+                                <td>Derived proxy</td>
+                                <td>Surface retention / runoff proxy</td>
+                                <td>HYSOGs250m + ESA WorldCover</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$h$</strong></td>
+                                <td>Derived</td>
+                                <td>HAND-based topographic safety</td>
+                                <td>MERIT Hydro</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$l$</strong></td>
+                                <td>Derived</td>
+                                <td>Built-up / impervious fraction</td>
+                                <td>GHSL / GHS-BUILT-S</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$Y$</strong></td>
+                                <td>Observed target</td>
+                                <td><code>flood_observed</code></td>
+                                <td>Global Flood Database v1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <div class="callout-body">
+                            Do not calculate final MCFRI parameters from this mapping table alone. Parameter estimation 
+                            requires the completed master dataset, calibration fitting, and independent validation — none 
+                            of which have been performed yet.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 7: DATA SCHEMA ========== -->
+            <section class="content-card" id="data-schema">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-code"></i></div>
+                    <h2>7. Research Data Schema Preview</h2>
+                </div>
+
+                <p>Target schema for the master calibration/validation dataset. This is a design specification — no data has been extracted yet.</p>
+
+                <div class="schema-block">
+<span class="schema-comment">// ── Identification ──</span>
+<span class="schema-field">event_id</span>             <span class="schema-type">string</span>    <span class="schema-comment">// Unique flood-event identifier</span>
+<span class="schema-field">spatial_block_id</span>      <span class="schema-type">string</span>    <span class="schema-comment">// 250 m grid-cell block ID</span>
+<span class="schema-field">lat</span>                   <span class="schema-type">float64</span>   <span class="schema-comment">// Grid-cell centroid latitude</span>
+<span class="schema-field">lon</span>                   <span class="schema-type">float64</span>   <span class="schema-comment">// Grid-cell centroid longitude</span>
+
+<span class="schema-comment">// ── Rainfall Predictors ──</span>
+<span class="schema-field">rainfall_24h_raw</span>      <span class="schema-type">float32</span>   <span class="schema-comment">// 24 h accumulated rainfall (mm)</span>
+<span class="schema-field">rainfall_48h_raw</span>      <span class="schema-type">float32</span>   <span class="schema-comment">// 48 h accumulated rainfall (mm)</span>
+<span class="schema-field">rainfall_72h_raw</span>      <span class="schema-type">float32</span>   <span class="schema-comment">// 72 h accumulated rainfall (mm)</span>
+<span class="schema-field">rainfall_delta_3h</span>     <span class="schema-type">float32</span>   <span class="schema-comment">// Max positive 3 h rainfall change (mm)</span>
+
+<span class="schema-comment">// ── Soil Moisture ──</span>
+<span class="schema-field">soil_moisture_raw</span>     <span class="schema-type">float32</span>   <span class="schema-comment">// Volumetric soil water (raw units)</span>
+
+<span class="schema-comment">// ── Terrain / Hydrography ──</span>
+<span class="schema-field">hand_raw</span>              <span class="schema-type">float32</span>   <span class="schema-comment">// Height Above Nearest Drainage (m)</span>
+<span class="schema-field">upa_raw</span>               <span class="schema-type">float32</span>   <span class="schema-comment">// Upstream drainage area (km²)</span>
+<span class="schema-field">distance_to_drainage_m</span> <span class="schema-type">float32</span>  <span class="schema-comment">// Distance to nearest drainage (m)</span>
+
+<span class="schema-comment">// ── Surface / Land Cover ──</span>
+<span class="schema-field">hydrologic_soil_group</span> <span class="schema-type">string</span>    <span class="schema-comment">// USDA soil group (A, B, C, D)</span>
+<span class="schema-field">land_cover_class</span>      <span class="schema-type">int16</span>     <span class="schema-comment">// ESA WorldCover class code</span>
+<span class="schema-field">curve_number</span>          <span class="schema-type">float32</span>   <span class="schema-comment">// CN lookup from soil group × land cover</span>
+<span class="schema-field">retention_proxy_raw</span>   <span class="schema-type">float32</span>   <span class="schema-comment">// S = (25400 / CN) - 254 (mm)</span>
+<span class="schema-field">built_up_fraction</span>     <span class="schema-type">float32</span>   <span class="schema-comment">// GHSL built-up surface fraction [0, 1]</span>
+
+<span class="schema-comment">// ── Flood Target ──</span>
+<span class="schema-field">flood_observed</span>        <span class="schema-type">int8</span>      <span class="schema-comment">// Binary flood observation (0 / 1)</span>
+<span class="schema-field">flood_duration</span>        <span class="schema-type">float32</span>   <span class="schema-comment">// Duration of flooding (days)</span>
+<span class="schema-field">clear_views</span>           <span class="schema-type">int16</span>     <span class="schema-comment">// Number of clear satellite observations</span>
+<span class="schema-field">clear_perc</span>            <span class="schema-type">float32</span>   <span class="schema-comment">// Percentage of clear views</span>
+<span class="schema-field">jrc_perm_water</span>        <span class="schema-type">int8</span>      <span class="schema-comment">// JRC permanent water mask (0 / 1)</span>
+
+<span class="schema-comment">// ── Source / Version Metadata ──</span>
+<span class="schema-field">imerg_version</span>         <span class="schema-type">string</span>    <span class="schema-comment">// "V07"</span>
+<span class="schema-field">era5_version</span>          <span class="schema-type">string</span>    <span class="schema-comment">// "ERA5-Land"</span>
+<span class="schema-field">merit_version</span>         <span class="schema-type">string</span>    <span class="schema-comment">// "MERIT Hydro v1.0.1"</span>
+<span class="schema-field">ghsl_product</span>          <span class="schema-type">string</span>    <span class="schema-comment">// Product/epoch selected at build time</span>
+<span class="schema-field">worldcover_version</span>    <span class="schema-type">string</span>    <span class="schema-comment">// "ESA WorldCover v200"</span>
+<span class="schema-field">extraction_timestamp</span>  <span class="schema-type">datetime</span>  <span class="schema-comment">// When this row was extracted</span>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 8: RESEARCH READINESS ========== -->
+            <section class="content-card" id="readiness">
+                <div class="section-header">
+                    <div class="section-icon section-icon-green"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <h2>8. Research Readiness Dashboard</h2>
+                </div>
+
+                <div class="readiness-panel">
+                    <div class="readiness-stage">
+                        <div class="readiness-stage-num">1</div>
+                        <div class="readiness-stage-label">Dataset Construction</div>
+                    </div>
+                    <div class="readiness-body">
+                        <h4><i class="fa-solid fa-circle-check" style="color: var(--safe);"></i> Completed</h4>
+                        <ul class="checklist">
+                            <li><i class="fa-solid fa-circle-check check-done"></i> MCFRI-V2 equation architecture</li>
+                            <li><i class="fa-solid fa-circle-check check-done"></i> Four-component mathematical model</li>
+                            <li><i class="fa-solid fa-circle-check check-done"></i> Initial software implementation</li>
+                            <li><i class="fa-solid fa-circle-check check-done"></i> Development simulator</li>
+                            <li><i class="fa-solid fa-circle-check check-done"></i> Research documentation</li>
+                        </ul>
+
+                        <h4><i class="fa-solid fa-spinner" style="color: var(--primary);"></i> In Progress</h4>
+                        <ul class="checklist">
+                            <li><i class="fa-solid fa-circle-half-stroke check-progress"></i> Real historical flood data acquisition</li>
+                            <li><i class="fa-solid fa-circle-half-stroke check-progress"></i> Spatial / temporal alignment</li>
+                            <li><i class="fa-solid fa-circle-half-stroke check-progress"></i> One-event extraction prototype</li>
+                        </ul>
+
+                        <h4><i class="fa-solid fa-clock" style="color: var(--slate-400);"></i> Not Yet Completed</h4>
+                        <ul class="checklist">
+                            <li><i class="fa-regular fa-circle check-pending"></i> Empirical calibration</li>
+                            <li><i class="fa-regular fa-circle check-pending"></i> Independent validation</li>
+                            <li><i class="fa-regular fa-circle check-pending"></i> Baseline comparison</li>
+                            <li><i class="fa-regular fa-circle check-pending"></i> Ablation study</li>
+                            <li><i class="fa-regular fa-circle check-pending"></i> Sensitivity analysis</li>
+                            <li><i class="fa-regular fa-circle check-pending"></i> Final threshold selection</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 9: OPERATIONAL LAYER ========== -->
+            <section class="content-card" id="operational-layer">
+                <div class="section-header">
+                    <div class="section-icon section-icon-purple"><i class="fa-solid fa-layer-group"></i></div>
+                    <h2>9. AI SafeRoute Operational Layer</h2>
+                </div>
+
+                <div class="callout callout-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="callout-title">Operational Features ≠ Scientific Calibration</div>
+                        <div class="callout-body">
+                            The features listed below are <strong>downstream application features</strong> of the AI SafeRoute 
+                            disaster management platform. They consume the MCFRI-V2 score output but are <strong>NOT part of 
+                            the initial core MCFRI scientific calibration or validation</strong>. They remain fully functional 
+                            with the current development-default parameters.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comp-grid">
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-map-location-dot" style="color: var(--primary);"></i> Interactive Risk Map</span>
+                        <p class="comp-desc">Leaflet-based geospatial visualization with color-coded risk zones, dynamic radii, and layer controls.</p>
+                    </div>
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-house-chimney-medical" style="color: var(--safe);"></i> Shelter Logic</span>
+                        <p class="comp-desc">Inverse-distance shelter protection bonus with configurable radius (800 m) and dampening (0.80).</p>
+                    </div>
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-route" style="color: var(--accent-cyan);"></i> Route Guidance</span>
+                        <p class="comp-desc">Risk-aware evacuation routing that avoids danger zones and prioritizes safe corridors.</p>
+                    </div>
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-water" style="color: var(--danger);"></i> Flood Spillover</span>
+                        <p class="comp-desc">Danger zones propagate 10% excess risk to adjacent zones within 2000 m radius.</p>
+                    </div>
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-chart-line" style="color: var(--accent-purple);"></i> Risk Forecasting</span>
+                        <p class="comp-desc">1–6 hour future trajectory projection based on current conditions and rainfall rate.</p>
+                    </div>
+                    <div class="comp-card">
+                        <span class="comp-title"><i class="fa-solid fa-bell" style="color: var(--warn);"></i> Alert System & SOS</span>
+                        <p class="comp-desc">Automated emergency notifications and SOS triage prioritization based on risk tier.</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 10: INTEGRITY TESTS ========== -->
+            <section class="content-card" id="integrity-tests">
+                <div class="section-header">
+                    <div class="section-icon section-icon-green"><i class="fa-solid fa-check-double"></i></div>
+                    <h2>10. Mathematical / Software Integrity Tests</h2>
+                </div>
+
+                <div class="callout callout-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <div class="callout-title">These Are NOT Empirical Flood-Model Validation Tests</div>
+                        <div class="callout-body">
+                            The tests below verify engine mechanics, mathematical consistency, boundary clamping, and numerical 
+                            stability. A test showing that scores remain bounded, weights sum to 1, no NaN values occur, or that 
+                            falling rain produces $F_\Delta = 0$ is a <strong>software/mathematical integrity test</strong> — 
+                            NOT empirical flood-model validation. Empirical validation requires calibrated parameters fitted 
+                            against real-world observational flood datasets, which has not yet been performed.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Test ID</th>
+                                <th>Test Purpose</th>
+                                <th>Target Condition</th>
+                                <th>Mathematical Integrity Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>TEST_A</code></td>
+                                <td>Safe Baseline</td>
+                                <td>Low rain (10mm), dry soil (0.1), good drainage (0.9) $\implies S < 40$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Score: 3)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_B</code></td>
+                                <td>Severe Inundation</td>
+                                <td>High rain (280mm), saturated soil (0.95), poor drainage (0.1) $\implies S > 120$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Score: 139)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_C</code></td>
+                                <td>Flash Acceleration</td>
+                                <td>$\Delta R = +200\text{mm} \implies F_\Delta > 0.30$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED ($F_\Delta = 0.765$)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_D</code></td>
+                                <td>Drainage Mitigation</td>
+                                <td>Excellent drainage ($d=0.95$) $\implies F_W < 0.05$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED ($F_W = 0.011$)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_E</code></td>
+                                <td>Land Imperviousness</td>
+                                <td>Impervious ($l=0.05$) vs Permeable ($l=0.90$) $\implies 9.5\times$ risk ratio</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (9.5x Ratio)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_F</code></td>
+                                <td>Falling Rainfall Filter</td>
+                                <td>Receding rain ($\Delta R = -50$mm) $\implies F_\Delta = 0$ exactly</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED ($F_\Delta = 0.000$)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_G</code></td>
+                                <td>Boundary Clamping</td>
+                                <td>Inputs $R=9999, m=5, d=-1 \implies S \in [0, 200]$ strictly</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Bounded)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_H</code></td>
+                                <td>Weight Unity Guard</td>
+                                <td>$\sum w_i = 1.0 \pm 10^{-6}$</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (Sum = 1.000000)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>TEST_I</code></td>
+                                <td>Schema & NaN Sanity</td>
+                                <td>140 numeric fields checked; zero NaN or Infinity values</td>
+                                <td><span style="color: var(--safe); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> PASSED (100% Valid)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- ========== SECTION 11: RESEARCH ROADMAP ========== -->
+            <section class="content-card" id="roadmap">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-road"></i></div>
+                    <h2>11. MCFRI-V2 Research Roadmap</h2>
+                </div>
+
+                <p>The complete research trajectory from data verification through publication. The current active stage is highlighted.</p>
+
+                <ul class="roadmap-list">
+                    <li class="roadmap-item roadmap-item-done">
+                        <span class="roadmap-num">1</span>
+                        <span><strong>Data source verification</strong> — Identify and verify availability of all satellite and reanalysis products</span>
+                        <span class="status-badge status-complete" style="margin-left: auto;"><i class="fa-solid fa-check"></i> Done</span>
+                    </li>
+                    <li class="roadmap-item roadmap-item-active">
+                        <span class="roadmap-num">2</span>
+                        <span><strong>One-event extraction</strong> — Extract and align all variables for a single historical flood event as proof-of-concept</span>
+                        <span class="status-badge status-active" style="margin-left: auto;"><i class="fa-solid fa-spinner fa-spin"></i> Active</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">3</span>
+                        <span><strong>30-event MVP dataset</strong> — Build minimum viable dataset across diverse geographies and flood types</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">4</span>
+                        <span><strong>Data quality control</strong> — Outlier detection, missing-value handling, and cross-source consistency checks</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">5</span>
+                        <span><strong>Dataset freeze</strong> — Lock the master calibration/validation dataset with version control and provenance</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">6</span>
+                        <span><strong>Parameter calibration</strong> — Optimize exponents, weights, and scaling constants against observed flood outcomes</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">7</span>
+                        <span><strong>Spatial/event-block validation</strong> — Hold-out validation using spatial and temporal cross-validation strategies</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">8</span>
+                        <span><strong>Baseline comparison</strong> — Compare MCFRI-V2 against null models, logistic regression, and existing flood indices</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">9</span>
+                        <span><strong>Ablation analysis</strong> — Systematically remove components to quantify each factor's contribution</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">10</span>
+                        <span><strong>Sensitivity analysis</strong> — Characterize model response to parameter perturbations and input uncertainty</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">11</span>
+                        <span><strong>Threshold estimation</strong> — Derive empirically grounded Safe/Warning/Danger boundaries from ROC analysis</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">12</span>
+                        <span><strong>Final paper</strong> — Peer-reviewed publication documenting methodology, results, and limitations</span>
+                    </li>
+                    <li class="roadmap-item">
+                        <span class="roadmap-num">13</span>
+                        <span><strong>Zenodo publication</strong> — Archival deposit of dataset, code, and reproducibility artifacts with DOI</span>
+                    </li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>AI SafeRoute Disaster Management System</strong> — MCFRI-V2 Research Platform</p>
+        <p style="margin-top: 4px; color: #94a3b8;">
+            Development Model — All parameters are unvalidated development defaults. Real-world validation pending.
+        </p>
+    </footer>
+
+</body>
+</html>

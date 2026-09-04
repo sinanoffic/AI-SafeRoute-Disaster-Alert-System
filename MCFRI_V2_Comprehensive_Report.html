@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCFRI-V2 Technical Specification & Mathematical Reference</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- MathJax 3 with SVG renderer for crisp PDF print quality -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+            @bottom-right {
+                content: counter(page);
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 8pt;
+                color: #64748b;
+            }
+            @bottom-left {
+                content: "AI SafeRoute | MCFRI-V2 Technical Specification";
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 8pt;
+                color: #64748b;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #1e293b;
+            line-height: 1.55;
+            font-size: 9.5pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Cover Header */
+        .doc-header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .doc-title-group h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20pt;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+        }
+
+        .doc-title-group .doc-sub {
+            font-size: 10.5pt;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: 4px;
+        }
+
+        .doc-meta {
+            text-align: right;
+            font-size: 8pt;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .doc-meta strong {
+            color: #0f172a;
+        }
+
+        /* Warning Callout Box */
+        .notice-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            border-top: 1px solid #fef3c7;
+            border-right: 1px solid #fef3c7;
+            border-bottom: 1px solid #fef3c7;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            font-size: 8.5pt;
+            color: #92400e;
+            page-break-inside: avoid;
+        }
+
+        .notice-box strong {
+            color: #b45309;
+            font-size: 9pt;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        /* Sections */
+        .section-block {
+            margin-bottom: 22px;
+            page-break-inside: auto;
+        }
+
+        .section-heading {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12.5pt;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            page-break-after: avoid;
+        }
+
+        .subsection-heading {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: #2563eb;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            page-break-after: avoid;
+        }
+
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+
+        /* Equation Cards */
+        .equation-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 11pt;
+            page-break-inside: avoid;
+        }
+
+        .equation-box .eq-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+
+        /* Component Cards 2x2 Grid */
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .comp-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 8.5pt;
+            page-break-inside: avoid;
+        }
+
+        .comp-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+
+        .comp-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 9.5pt;
+            color: #0f172a;
+        }
+
+        .comp-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 7.5pt;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .comp-formula {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 6px 8px;
+            text-align: center;
+            margin: 6px 0;
+            font-size: 10pt;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+            margin: 10px 0 16px 0;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        td {
+            padding: 5px 10px;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: #1e40af;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 7.5pt;
+        }
+
+        /* Code Block */
+        .code-snippet {
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.8pt;
+            padding: 10px 12px;
+            border-radius: 6px;
+            line-height: 1.45;
+            margin: 10px 0;
+            page-break-inside: avoid;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        /* Numbered Step List */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .step-row {
+            display: flex;
+            gap: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 8.5pt;
+            page-break-inside: avoid;
+        }
+
+        .step-num {
+            font-weight: 800;
+            color: #2563eb;
+            font-family: 'Outfit', sans-serif;
+            font-size: 9pt;
+            flex-shrink: 0;
+            width: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Document Cover Header -->
+    <header class="doc-header">
+        <div class="doc-title-group">
+            <h1>MCFRI-V2 Risk Calculation Engine</h1>
+            <div class="doc-sub">Multi-Catchment Flood Risk Index — Complete Mathematical Specification</div>
+        </div>
+        <div class="doc-meta">
+            <div><strong>Platform:</strong> AI SafeRoute Disaster Alert</div>
+            <div><strong>Engine Version:</strong> 2.0 (Normalized Non-Linear)</div>
+            <div><strong>Status:</strong> Unvalidated Development Defaults</div>
+            <div><strong>Output Range:</strong> $S(t) \in [0, 200]$</div>
+        </div>
+    </header>
+
+    <!-- Notice Box -->
+    <div class="notice-box">
+        <strong>⚠️ UNVALIDATED DEVELOPMENT STATUS NOTICE</strong>
+        All mathematical equations, exponents ($\alpha, \beta, \gamma, \delta, \epsilon, \eta$), half-saturation constants ($R_0, Q_0$), component weights ($w_{RM}, w_W, w_T, w_D$), and classification thresholds documented herein are <strong>UNVALIDATED DEVELOPMENT DEFAULTS</strong>. They are engineered to establish mathematically bounded behavior ($S(t) \in [0, 200]$) and test application pipelines. <strong>These values must undergo empirical calibration and statistical validation against historical gauge datasets before operational field deployment.</strong>
+    </div>
+
+    <!-- Section 1: Executive Overview & Master Equation -->
+    <div class="section-block">
+        <h2 class="section-heading">1. Master Equation Formulation</h2>
+        <p>
+            The <strong>Multi-Catchment Flood Risk Index Version 2 (MCFRI-V2)</strong> transforms multi-source meteorological, hydrologic, and topographic telemetry into a strictly bounded, non-linear risk score $S(t) \in [0, 200]$. Unlike linear approximations where risk accumulates proportionally to rain volume, MCFRI-V2 models asymptotic saturation, moisture coupling, topographic attenuation, and rate-of-change cloudburst dynamics.
+        </p>
+
+        <div class="equation-box">
+            <div class="eq-label">Master Bounded Equation</div>
+            $$S(t) = 200 \times \Big[ w_{RM} \cdot F_{RM} + w_{W} \cdot F_{W} + w_{T} \cdot F_{T} + w_{\Delta} \cdot F_{\Delta} \Big]$$
+        </div>
+
+        <div class="step-list">
+            <div class="step-row">
+                <div class="step-num">S(t)</div>
+                <div><strong>Composite Risk Score:</strong> Dimensionless continuous risk metric, strictly bounded in $[0, 200]$.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">200</div>
+                <div><strong>Operational Scale Multiplier ($S_{\max}$):</strong> Scales unit weights ($\sum w_i = 1.0$) and factors ($F_i \in [0, 1]$) into human-interpretable emergency tiers.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">w</div>
+                <div><strong>Normalized Component Weights:</strong> Subject to strict sum unity $w_{RM} + w_W + w_T + w_D = 1.0$. Auto-normalized at runtime.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">F</div>
+                <div><strong>Four Sub-Component Factors ($F_i \in [0, 1]$):</strong> Evaluates non-linear physics across 4 independent vulnerability channels.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Four Non-Linear Sub-Components -->
+    <div class="section-block">
+        <h2 class="section-heading">2. Detailed Sub-Component Equations</h2>
+        <p>Every sub-component isolates a distinct physical hazard mechanism and returns a normalized value in the unit interval $[0, 1]$:</p>
+
+        <div class="component-grid">
+            <!-- FRM -->
+            <div class="comp-card">
+                <div class="comp-card-header">
+                    <span class="comp-card-title">1. Rainfall–Moisture Coupling ($F_{RM}$)</span>
+                    <span class="comp-badge">$w_{RM} = 0.40$</span>
+                </div>
+                <div class="comp-formula">
+                    $$F_{RM} = r^\alpha \cdot \left(\frac{e^{\beta m} - 1}{e^\beta - 1}\right)$$
+                </div>
+                <p>Models asymptotic rainfall volume coupled exponentially with soil moisture. Dry soil absorbs rain; saturated soil produces catastrophic runoff.</p>
+                <div style="font-size: 7.8pt; color: #64748b; margin-top: 4px;">
+                    • $r = \frac{R}{R + 150}$ (Michaelis-Menten) &nbsp;|&nbsp; • $\alpha = 1.5, \; \beta = 2.0$
+                </div>
+            </div>
+
+            <!-- FW -->
+            <div class="comp-card">
+                <div class="comp-card-header">
+                    <span class="comp-card-title">2. Water & Drainage Vulnerability ($F_W$)</span>
+                    <span class="comp-badge">$w_W = 0.25$</span>
+                </div>
+                <div class="comp-formula">
+                    $$F_W = p^\gamma \cdot (1 - d)^\delta$$
+                </div>
+                <p>Quantifies risk from proximity to riverbanks/coastlines compounded by municipal culvert and drainage inadequacy $(1 - d)$.</p>
+                <div style="font-size: 7.8pt; color: #64748b; margin-top: 4px;">
+                    • $p = \text{raw}(1-5) \div 5$ &nbsp;|&nbsp; • $d \in [0, 1]$ &nbsp;|&nbsp; • $\gamma = 2.0, \; \delta = 1.5$
+                </div>
+            </div>
+
+            <!-- FT -->
+            <div class="comp-card">
+                <div class="comp-card-header">
+                    <span class="comp-card-title">3. Topography & Land-Use ($F_T$)</span>
+                    <span class="comp-badge">$w_T = 0.20$</span>
+                </div>
+                <div class="comp-formula">
+                    $$F_T = (1 - h)^\epsilon \cdot (1 - l)$$
+                </div>
+                <p>Structural risk from low topographic elevation $(1 - h)$ (HAND basin exposure) and urban concrete surface impermeability $(1 - l)$.</p>
+                <div style="font-size: 7.8pt; color: #64748b; margin-top: 4px;">
+                    • $h = \frac{\text{elev}-1}{4} \in [0, 1]$ &nbsp;|&nbsp; • $l \in [0, 1]$ &nbsp;|&nbsp; • $\epsilon = 2.0$
+                </div>
+            </div>
+
+            <!-- FDelta -->
+            <div class="comp-card">
+                <div class="comp-card-header">
+                    <span class="comp-card-title">4. Flash Flood Acceleration ($F_\Delta$)</span>
+                    <span class="comp-badge">$w_D = 0.15$</span>
+                </div>
+                <div class="comp-formula">
+                    $$F_\Delta = q^\eta$$
+                </div>
+                <p>Half-wave rectified rate-of-change factor isolating sudden cloudburst surges. Steady or receding rainfall produces exactly zero.</p>
+                <div style="font-size: 7.8pt; color: #64748b; margin-top: 4px;">
+                    • $q = \frac{\max(0, \Delta R)}{\max(0, \Delta R) + 50}$ &nbsp;|&nbsp; • $\eta = 1.2$
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Variable Glossary & Symbol Reference -->
+    <div class="section-block page-break">
+        <h2 class="section-heading">3. Complete Variable Definitions & Glossary</h2>
+        <p>Every mathematical symbol is cataloged with its physical units, domain constraints, normalization logic, and default parameter values:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Symbol</th>
+                    <th style="width: 16%;">Variable Name</th>
+                    <th style="width: 28%;">Physical Meaning</th>
+                    <th style="width: 10%;">Units</th>
+                    <th style="width: 14%;">Domain</th>
+                    <th style="width: 22%;">Default / Equation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>$R$</strong></td>
+                    <td><code>rainfall</code></td>
+                    <td>Accumulated precipitation volume</td>
+                    <td>$\text{mm}$</td>
+                    <td>$[0, \infty)$</td>
+                    <td>Dynamic ($0 - 300\text{ mm}$)</td>
+                </tr>
+                <tr>
+                    <td><strong>$R_0$</strong></td>
+                    <td><code>R0</code></td>
+                    <td>Rainfall half-saturation constant ($r = 0.5$ at $R = R_0$)</td>
+                    <td>$\text{mm}$</td>
+                    <td>$(0, \infty)$</td>
+                    <td><code>150 mm</code></td>
+                </tr>
+                <tr>
+                    <td><strong>$r$</strong></td>
+                    <td><code>norm.rainfall</code></td>
+                    <td>Normalized rainfall saturation ratio</td>
+                    <td>Dimensionless</td>
+                    <td>$[0, 1)$</td>
+                    <td>$r = \frac{R}{R + 150}$</td>
+                </tr>
+                <tr>
+                    <td><strong>$m$</strong></td>
+                    <td><code>soilMoisture</code></td>
+                    <td>Antecedent soil saturation index</td>
+                    <td>Index</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td><code>0.5</code> ($0=\text{dry}, 1=\text{sat}$)</td>
+                </tr>
+                <tr>
+                    <td><strong>$p$</strong></td>
+                    <td><code>waterProximity</code></td>
+                    <td>Exposure to rivers, lakes, coastline</td>
+                    <td>Index</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td>Zone rating $(1-5) \div 5$</td>
+                </tr>
+                <tr>
+                    <td><strong>$d$</strong></td>
+                    <td><code>drainage</code></td>
+                    <td>Municipal culvert discharge quality</td>
+                    <td>Index</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td><code>0.5</code> ($0=\text{clogged}, 1=\text{opt}$)</td>
+                </tr>
+                <tr>
+                    <td><strong>$h$</strong></td>
+                    <td><code>handExposure</code></td>
+                    <td>Topographic elevation safety factor (HAND)</td>
+                    <td>Index</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td>$h = \frac{\text{elev}-1}{4}$ ($0=\text{basin}, 1=\text{crest}$)</td>
+                </tr>
+                <tr>
+                    <td><strong>$l$</strong></td>
+                    <td><code>permeability</code></td>
+                    <td>Surface infiltration porousness</td>
+                    <td>Index</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td><code>0.5</code> ($0=\text{paved}, 1=\text{forest}$)</td>
+                </tr>
+                <tr>
+                    <td><strong>$\Delta R$</strong></td>
+                    <td><code>deltaR</code></td>
+                    <td>Positive rate of rainfall accumulation change</td>
+                    <td>$\text{mm/event}$</td>
+                    <td>$[0, \infty)$</td>
+                    <td>$\max(0, R_t - R_{t-1})$</td>
+                </tr>
+                <tr>
+                    <td><strong>$Q_0$</strong></td>
+                    <td><code>Q0</code></td>
+                    <td>Rainfall rate half-saturation constant</td>
+                    <td>$\text{mm/event}$</td>
+                    <td>$(0, \infty)$</td>
+                    <td><code>50 mm/event</code></td>
+                </tr>
+                <tr>
+                    <td><strong>$q$</strong></td>
+                    <td><code>norm.rainfallRate</code></td>
+                    <td>Normalized cloudburst acceleration ratio</td>
+                    <td>Dimensionless</td>
+                    <td>$[0, 1)$</td>
+                    <td>$q = \frac{\Delta R}{\Delta R + 50}$</td>
+                </tr>
+                <tr>
+                    <td><strong>$\alpha \dots \eta$</strong></td>
+                    <td><code>exponents</code></td>
+                    <td>Non-linear power & curvature parameters</td>
+                    <td>Dimensionless</td>
+                    <td>$(0, \infty)$</td>
+                    <td>$\alpha=1.5, \beta=2, \gamma=2, \delta=1.5, \epsilon=2, \eta=1.2$</td>
+                </tr>
+                <tr>
+                    <td><strong>$w_i$</strong></td>
+                    <td><code>weights</code></td>
+                    <td>Component contribution weights ($\sum w_i = 1$)</td>
+                    <td>Dimensionless</td>
+                    <td>$[0.0, 1.0]$</td>
+                    <td>$w_{RM}=0.40, w_W=0.25, w_T=0.20, w_D=0.15$</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Section 4: Operational Classification Tiers & Downstream Pipeline -->
+    <div class="section-block">
+        <h2 class="section-heading">4. Classification Tiers & Secondary Processing</h2>
+        <p>The continuous score $S(t) \in [0, 200]$ is mapped into three distinct emergency response tiers:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 18%;">Risk Tier</th>
+                    <th style="width: 16%;">Score Range</th>
+                    <th style="width: 14%;">UI Color</th>
+                    <th style="width: 26%;">Hydrologic Status</th>
+                    <th style="width: 26%;">Automated System Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong style="color: #10b981;">SAFE</strong></td>
+                    <td>$0 \le S < 80$</td>
+                    <td><code>#22c55e</code></td>
+                    <td>Infiltration capacity exceeds rain rate; drainage clear.</td>
+                    <td>Standard routine monitoring; all evacuation routes open.</td>
+                </tr>
+                <tr>
+                    <td><strong style="color: #f59e0b;">WARNING</strong></td>
+                    <td>$80 \le S \le 140$</td>
+                    <td><code>#f59e0b</code></td>
+                    <td>Soil nearing saturation; localized street waterlogging.</td>
+                    <td>Stage emergency crews; advise emergency packing.</td>
+                </tr>
+                <tr>
+                    <td><strong style="color: #ef4444;">DANGER</strong></td>
+                    <td>$S > 140$</td>
+                    <td><code>#ef4444</code></td>
+                    <td>Severe inundation; river channel overflow; flash surge.</td>
+                    <td>Mandatory evacuation; roads in zone blacklisted; SOS triage.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="subsection-heading">Secondary Downstream Processing Pipeline:</h3>
+        <div class="step-list">
+            <div class="step-row">
+                <div class="step-num">1</div>
+                <div><strong>Shelter Protection Mitigation:</strong> Zones within $800\text{m}$ of designated shelters receive an inverse-distance risk offset up to $-40\text{ pts}$, followed by a $0.80$ dampening multiplier: $S_{\text{mit}} = (S_{\text{raw}} - \text{Bonus}) \times 0.80$.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">2</div>
+                <div><strong>Flood Spillover Bleed:</strong> Danger catchments ($S > 140$) propagate $10\%$ excess risk volume to adjacent zones within a $2000\text{m}$ radius: $\Delta S_j = \sum S_i \times 0.10 \times (1 - \text{dist}/2000\text{m})$.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">3</div>
+                <div><strong>Dynamic Map Visual Radius:</strong> Visual footprint expands dynamically on Leaflet maps: $R_{\text{vis}} = R_{\text{base}} \times (1 + S / 200)$.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">4</div>
+                <div><strong>Future Trajectory Projection:</strong> Forecasts risk evolution across a 1–6 hour window: $S_{\text{future}} = \min(200, S + (R/50)t_h + 10 p t_h)$.</div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">5</div>
+                <div><strong>Adaptive FIFO Memory Updating:</strong> Rolling 5-step buffer detects rapid surges ($\Delta S > 30$) and temporarily increases rainfall sensitivity weights ($\pm 0.01$).</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Worked Numerical Example -->
+    <div class="section-block page-break">
+        <h2 class="section-heading">5. Step-by-Step Worked Numerical Example (UNVALIDATED)</h2>
+        <p>A concrete mathematical evaluation illustrating the exact arithmetic pipeline:</p>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: 8.5pt;">
+            <strong>Sample Input Telemetry:</strong><br>
+            • Accumulated Rain $R = 200\text{ mm}$ &nbsp;|&nbsp; • Soil Moisture $m = 0.70$ &nbsp;|&nbsp; • Water Proximity $p = 0.80$ &nbsp;|&nbsp; • Drainage $d = 0.30$<br>
+            • Topographic Safety $h = 0.20$ &nbsp;|&nbsp; • Permeability $l = 0.30$ &nbsp;|&nbsp; • Rain Acceleration $\Delta R = 100\text{ mm/event}$
+        </div>
+
+        <div class="step-list">
+            <div class="step-row">
+                <div class="step-num">1</div>
+                <div>
+                    <strong>Normalization Step:</strong><br>
+                    $r = \frac{200}{200 + 150} = \frac{4}{7} \approx \mathbf{0.5714}, \quad q = \frac{100}{100 + 50} = \frac{2}{3} \approx \mathbf{0.6667}$<br>
+                    $(1 - d) = 0.70, \quad (1 - h) = 0.80, \quad (1 - l) = 0.70$
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">2</div>
+                <div>
+                    <strong>Non-Linear Sub-Component Factor Calculation:</strong><br>
+                    $F_{RM} = (0.5714)^{1.5} \times \left(\frac{e^{1.4} - 1}{e^{2.0} - 1}\right) = 0.4320 \times 0.4782 = \mathbf{0.2066}$<br>
+                    $F_W = (0.80)^{2.0} \times (0.70)^{1.5} = 0.6400 \times 0.5857 = \mathbf{0.3748}$<br>
+                    $F_T = (0.80)^{2.0} \times (0.70) = 0.6400 \times 0.7000 = \mathbf{0.4480}$<br>
+                    $F_\Delta = (0.6667)^{1.2} = \mathbf{0.6147}$
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">3</div>
+                <div>
+                    <strong>Weighted Linear Aggregation & Scaling:</strong><br>
+                    $\text{Weighted Sum} = (0.40 \times 0.2066) + (0.25 \times 0.3748) + (0.20 \times 0.4480) + (0.15 \times 0.6147)$<br>
+                    $= 0.0826 + 0.0937 + 0.0896 + 0.0922 = \mathbf{0.3581}$<br>
+                    $S_{\text{raw}} = 200 \times 0.3581 = \mathbf{71.62} \implies \mathbf{72} \quad \implies \mathbf{SAFE}$
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: Verification & Test Suite Matrix -->
+    <div class="section-block">
+        <h2 class="section-heading">6. Verification & Automated Test Suite</h2>
+        <p>The MCFRI-V2 engine includes 9 comprehensive unit and boundary tests (`mcfriV2Tests.js`). All 9 tests pass with 100% schema integrity and zero `NaN`/`Infinity` errors:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 14%;">Test ID</th>
+                    <th style="width: 24%;">Test Condition</th>
+                    <th style="width: 32%;">Target Verification</th>
+                    <th style="width: 30%;">Result Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>TEST_A</code></td>
+                    <td>Safe Baseline</td>
+                    <td>$R=10, m=0.1, d=0.9 \implies S < 40$</td>
+                    <td><strong style="color: #10b981;">PASSED (Score: 3)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_B</code></td>
+                    <td>Severe Flood Risk</td>
+                    <td>$R=280, m=0.95, d=0.1 \implies S > 120$</td>
+                    <td><strong style="color: #10b981;">PASSED (Score: 139)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_C</code></td>
+                    <td>Flash Flood Cloudburst</td>
+                    <td>$\Delta R = +200\text{mm} \implies F_\Delta > 0.30$</td>
+                    <td><strong style="color: #10b981;">PASSED ($F_\Delta = 0.765$)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_D</code></td>
+                    <td>Drainage Attenuation</td>
+                    <td>$d=0.95 \implies F_W < 0.05$</td>
+                    <td><strong style="color: #10b981;">PASSED ($F_W = 0.011$)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_E</code></td>
+                    <td>Paved Imperviousness</td>
+                    <td>Impervious vs Permeable ground vulnerability</td>
+                    <td><strong style="color: #10b981;">PASSED ($9.5\times$ risk ratio)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_F</code></td>
+                    <td>Receding Rain Directionality</td>
+                    <td>$\Delta R = -50\text{mm} \implies F_\Delta = 0$ exactly</td>
+                    <td><strong style="color: #10b981;">PASSED ($F_\Delta = 0.000$)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_G</code></td>
+                    <td>Boundary Clamping</td>
+                    <td>Out-of-bounds inputs ($R=9999, d=-1$) $\implies S \in [0, 200]$</td>
+                    <td><strong style="color: #10b981;">PASSED (Strictly clamped)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_H</code></td>
+                    <td>Weight Sum Unity</td>
+                    <td>$\sum w_i = 1.0 \pm 10^{-6}$</td>
+                    <td><strong style="color: #10b981;">PASSED ($\sum = 1.000000$)</strong></td>
+                </tr>
+                <tr>
+                    <td><code>TEST_I</code></td>
+                    <td>Schema & Numerical Sanity</td>
+                    <td>140 numeric fields checked for NaN/Infinity</td>
+                    <td><strong style="color: #10b981;">PASSED (0 errors found)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Section 7: Code Reproduction Specification -->
+    <div class="section-block">
+        <h2 class="section-heading">7. Standalone Code Implementation</h2>
+        <div class="code-snippet">
+function computeMCFRIV2({ R = 200, m = 0.7, p = 0.8, d = 0.3, h = 0.2, l = 0.3, deltaR = 100 }) {
+    // 1. Normalization Layer [0, 1]
+    const r = R / (R + 150);
+    const mNorm = Math.max(0, Math.min(1, m)), pNorm = Math.max(0, Math.min(1, p));
+    const dNorm = Math.max(0, Math.min(1, d)), hNorm = Math.max(0, Math.min(1, h)), lNorm = Math.max(0, Math.min(1, l));
+    const q = Math.max(0, deltaR) / (Math.max(0, deltaR) + 50);
+
+    // 2. Non-Linear Sub-Component Formulations
+    const FRM = Math.pow(r, 1.5) * ((Math.exp(2.0 * mNorm) - 1) / (Math.exp(2.0) - 1));
+    const FW = Math.pow(pNorm, 2.0) * Math.pow(1 - dNorm, 1.5);
+    const FT = Math.pow(1 - hNorm, 2.0) * (1 - lNorm);
+    const FDelta = Math.pow(q, 1.2);
+
+    // 3. Weighted Aggregation & Bounding [0, 200]
+    const rawScore = 200 * (0.40 * FRM + 0.25 * FW + 0.20 * FT + 0.15 * FDelta);
+    const finalScore = Math.max(0, Math.min(200, Math.round(rawScore)));
+
+    return { finalScore, components: { FRM, FW, FT, FDelta } };
+}
+        </div>
+    </div>
+
+</body>
+</html>

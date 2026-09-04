@@ -642,3 +642,106 @@ input[type=range].slider-future::-webkit-slider-thumb {
     from { opacity: 1; }
     to   { opacity: 0; }
 }
+
+/* =============================================
+   MCFRI-V2: Risk Breakdown Panel
+   ============================================= */
+.risk-breakdown-section {
+    margin-top: 15px;
+}
+
+.breakdown-toggle {
+    width: 100%;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 10px;
+    color: #3b82f6;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.breakdown-toggle:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.breakdown-chevron {
+    transition: transform 0.3s;
+    margin-left: auto;
+}
+
+.breakdown-panel {
+    margin-top: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.breakdown-zone-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #1e3a8a;
+    margin-bottom: 12px;
+}
+
+.breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.breakdown-label {
+    font-size: 0.78rem;
+    color: #475569;
+    min-width: 130px;
+    flex-shrink: 0;
+}
+
+.breakdown-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.breakdown-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.breakdown-value {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #334155;
+    min-width: 40px;
+    text-align: right;
+}
+
+.breakdown-explanation {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.engine-version-label {
+    margin-top: 12px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    text-align: center;
+    font-style: italic;
+}
