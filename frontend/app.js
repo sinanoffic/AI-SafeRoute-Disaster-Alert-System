@@ -290,18 +290,18 @@ function setRiskLevel(level) {
         text.textContent = 'High Risk Alert';
         desc.textContent = 'Prototype warning: modeled risk is elevated. Consider higher ground and follow official emergency instructions.';
         if (prev !== 'danger') {
-            addAlert('danger', 'fa-triangle-exclamation', 'Flood Risk Detected',
+            addAlert('danger', 'fa-triangle-exclamation', 'Prototype Modeled-Risk Alert',
                 `Risk score ${AppState.maxRiskScore} – Prototype guidance: consider moving toward a modeled lower-risk shelter and follow official emergency guidance.`);
-            showToast('danger', 'Flood Risk Detected!',
-                'Flood risk detected near your location. Move to higher ground.');
+            showToast('danger', 'Prototype Modeled-Risk Alert',
+                'Prototype warning: modeled risk is elevated. Consider higher ground and follow official emergency instructions.');
         }
     } else if (level === 'warning') {
         icon.className = 'fa-solid fa-exclamation-circle';
         text.textContent = 'Warning Active';
-        desc.textContent = 'Moderate conditions. Stay alert and prepare for possible evacuation.';
+        desc.textContent = 'Prototype modeled-risk classification: Moderate under the current simulated inputs. Monitor official local guidance and be prepared to follow instructions from emergency authorities if conditions require it.';
         if (prev === 'safe') {
-            addAlert('warning', 'fa-exclamation-circle', 'Weather Warning',
-                `Risk score rising (${AppState.maxRiskScore}). Monitor conditions.`);
+            addAlert('warning', 'fa-exclamation-circle', 'Prototype Risk Warning',
+                `Modeled risk score is rising (${AppState.maxRiskScore}). Review the simulated output together with official local information.`);
         }
     } else {
         icon.className = 'fa-solid fa-shield-check';
@@ -534,8 +534,19 @@ async function recalculateActiveRoute(silent = true) {
     const typeInfo = RoutingEngine.routeTypeLabel(targetRoute.routeType);
     let explanation = RoutingEngine.routeExplanation(targetRoute);
 
-    if (typeInfo.text === 'Safe Road Route') typeInfo.text = 'Lower Modeled-Risk Road Route';
-    if (explanation.includes('Safe road path found')) explanation = explanation.replace('Safe road path found', 'Lower modeled-risk road path found among the evaluated alternatives');
+    if (targetRoute.routeType === 'safe') {
+        typeInfo.text = 'Lower Modeled-Risk Road Route';
+        explanation = 'Lower modeled-risk road path found among the evaluated alternatives. This prototype result is not a safety guarantee; verify real conditions and follow official guidance.';
+    } else if (targetRoute.routeType === 'cautious') {
+        typeInfo.text = 'Modeled-Risk Caution Route';
+        explanation = 'Prototype route evaluation: this path intersects modeled warning-risk zones. Verify real-world conditions and follow official emergency guidance.';
+    } else if (targetRoute.routeType === 'risky') {
+        typeInfo.text = 'High Modeled-Risk Route';
+        explanation = 'Prototype route evaluation: this path intersects modeled danger-risk zones. Do not treat this result as evacuation guidance; follow official emergency instructions.';
+    } else if (targetRoute.routeType === 'fallback') {
+        typeInfo.text = 'Prototype Fallback Route';
+        explanation = 'Road-routing data was unavailable, so this is a prototype fallback path. It must not be interpreted as a verified safe route.';
+    }
 
     
     const infoCard = document.getElementById('route-info-card');

@@ -90,25 +90,25 @@ const StateManager = (() => {
 
         let text = '';
         if (dangerCount > 0) {
-            text = `⚠️ HIGH RISK – ${dangerCount} danger zone(s). `;
-            if (spilloverCount > 0) text += `Flood spreading to ${spilloverCount} neighbor(s). `;
+            text = `⚠️ Prototype modeled risk: HIGH – ${dangerCount} danger-classified zone(s). `;
+            if (spilloverCount > 0) text += `Modeled spillover affects ${spilloverCount} neighboring zone(s). `;
             text += `Score: ${maxScore}`;
             if (timeHorizon > 0) text += ` → ${maxFuture} in ${timeHorizon}h`;
-            text += '. Evacuation recommended.';
+            text += '. Prototype indicator only; follow official emergency guidance for any real-world evacuation decision.';
             simFeedback.style.background = 'rgba(239, 68, 68, 0.1)';
             simFeedback.style.color = '#ef4444';
             simFeedback.style.borderColor = 'rgba(239, 68, 68, 0.3)';
         } else if (warningCount > 0) {
-            text = `⚡ Moderate risk – ${warningCount} warning zone(s). Score: ${maxScore}`;
+            text = `⚡ Prototype modeled risk: MODERATE – ${warningCount} warning-classified zone(s). Score: ${maxScore}`;
             if (timeHorizon > 0) text += ` → ${maxFuture} in ${timeHorizon}h`;
-            text += '. Stay alert.';
+            text += '. Review official local guidance for real-world conditions.';
             simFeedback.style.background = 'rgba(245, 158, 11, 0.1)';
             simFeedback.style.color = '#f59e0b';
             simFeedback.style.borderColor = 'rgba(245, 158, 11, 0.3)';
         } else {
-            text = `✅ All zones safe. Score: ${maxScore}`;
+            text = `✅ All zones are currently classified as low modeled risk under the selected simulated inputs. Score: ${maxScore}`;
             if (timeHorizon > 0) text += ` → ${maxFuture} in ${timeHorizon}h`;
-            text += '. Normal conditions.';
+            text += '. This is a prototype classification, not a real-world safety guarantee.';
             simFeedback.style.background = 'rgba(34, 197, 94, 0.1)';
             simFeedback.style.color = '#22c55e';
             simFeedback.style.borderColor = 'rgba(34, 197, 94, 0.3)';
@@ -155,7 +155,7 @@ const StateManager = (() => {
         // Adaptive weights indicator
         const weightsEl = document.getElementById('adaptive-weights');
         if (weightsEl) {
-            weightsEl.innerHTML = `<span>AI Weights: R×${adaptive.rainfallWeight.toFixed(4)} | W×${adaptive.proximityWeight.toFixed(2)} | E×${adaptive.elevationWeight.toFixed(1)}</span>`;
+            weightsEl.innerHTML = `<span>Adaptive heuristic weights: R×${adaptive.rainfallWeight.toFixed(4)} | W×${adaptive.proximityWeight.toFixed(2)} | E×${adaptive.elevationWeight.toFixed(1)}</span>`;
         }
     }
 
