@@ -107,7 +107,7 @@
                 <div class="map-legend">
                     <div class="legend-item"><span class="color-box red"></span> High Risk</div>
                     <div class="legend-item"><span class="color-box yellow"></span> Warning</div>
-                    <div class="legend-item"><span class="color-box green"></span> Safe Zone</div>
+                    <div class="legend-item"><span class="color-box green"></span> Low-Risk Zone</div>
                     <div class="legend-item"><span class="color-box blue"></span> You</div>
                     <div id="legend-counts" class="legend-counts"></div>
                 </div>
@@ -198,7 +198,7 @@
                     
                     <!-- Feedback -->
                     <div class="simulation-feedback" id="sim-feedback">
-                        ✅ All zones safe. Max risk score: 0. Normal conditions.
+                        ✅ All zones are currently classified as low modeled risk under the selected simulated inputs.
                     </div>
 
                     <!-- Per-Zone Prediction Readout -->
@@ -235,7 +235,7 @@
             <section id="page-shelters" class="page hidden">
                 <header class="page-header compact">
                     <button class="icon-btn" onclick="navigateTo('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
-                    <h2>Safe Shelters</h2>
+                    <h2>Modeled Lower-Risk Shelters</h2>
                 </header>
                 <div class="filter-bar">
                     <button class="filter-chip active" onclick="filterShelters('All')">All</button>

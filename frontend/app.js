@@ -288,10 +288,10 @@ function setRiskLevel(level) {
     if (level === 'danger') {
         icon.className = 'fa-solid fa-triangle-exclamation';
         text.textContent = 'High Risk Alert';
-        desc.textContent = 'Flood risk detected. Move to higher ground immediately.';
+        desc.textContent = 'Prototype warning: modeled risk is elevated. Consider higher ground and follow official emergency instructions.';
         if (prev !== 'danger') {
             addAlert('danger', 'fa-triangle-exclamation', 'Flood Risk Detected',
-                `Risk score ${AppState.maxRiskScore} – Evacuate to nearest shelter.`);
+                `Risk score ${AppState.maxRiskScore} – Prototype guidance: consider moving toward a modeled lower-risk shelter and follow official emergency guidance.`);
             showToast('danger', 'Flood Risk Detected!',
                 'Flood risk detected near your location. Move to higher ground.');
         }
@@ -532,7 +532,11 @@ async function recalculateActiveRoute(silent = true) {
 
     // Minimal Guidance UI
     const typeInfo = RoutingEngine.routeTypeLabel(targetRoute.routeType);
-    const explanation = RoutingEngine.routeExplanation(targetRoute);
+    let explanation = RoutingEngine.routeExplanation(targetRoute);
+
+    if (typeInfo.text === 'Safe Road Route') typeInfo.text = 'Lower Modeled-Risk Road Route';
+    if (explanation.includes('Safe road path found')) explanation = explanation.replace('Safe road path found', 'Lower modeled-risk road path found among the evaluated alternatives');
+
     
     const infoCard = document.getElementById('route-info-card');
     const infoHeader = document.getElementById('route-info-header');
@@ -548,7 +552,7 @@ async function recalculateActiveRoute(silent = true) {
                     <span>${typeInfo.text} (${targetRoute.distance}km, ${targetRoute.duration}m)</span>
                 </div>`;
         }
-        if (infoText) infoText.textContent = explanation;
+        if (infoText) infoText.textContent = typeInfo.explanationOverride || explanation;
     }
 
     // Hide debug panel as per 'minimal' request

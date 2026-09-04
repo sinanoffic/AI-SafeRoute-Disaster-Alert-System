@@ -9,7 +9,7 @@
 
 ## Overview
 
-AI SafeRoute is an experimental disaster management platform. MCFRI Legacy v1.0 is the original prototype of the Multi-Catchment Flood Risk Index (MCFRI), engineered to compute a heuristic flood-risk score from environmental inputs. The system evaluates available road-route alternatives using a risk-weighted cost function to guide risk-aware evacuation routing. The backend orchestrates these features and serves them to a frontend dashboard.
+AI SafeRoute is an experimental disaster management platform. MCFRI Legacy v1.0 is the original prototype of the Multi-Catchment Flood Risk Index (MCFRI), engineered to compute a heuristic flood-risk score from environmental inputs. The system evaluates available road-route alternatives using a risk-weighted cost function to guide risk-aware evacuation routing. The frontend main map simulation runs locally in the browser, while the backend provides separate prototype REST functionality.
 
 This repository serves as a historical archive of the prototype software.
 
@@ -41,11 +41,11 @@ Where:
 
 **Implementation details:**
 * **Scaling**: The raw score is scaled down using a theoretical maximum to constrain the output roughly to a [0, 200] historical risk range.
-* **Shelter mitigation**: Zones near predefined shelters receive a heuristic risk reduction based on linear distance decay up to an 800m cutoff radius. The protection bonus is subtracted from the score, followed by an unconditional $\times 0.8$ dampening factor.
+* **Shelter mitigation**: Zones near predefined shelters receive a heuristic risk reduction based on linear distance decay up to an 800m cutoff radius. The protection bonus is subtracted from the score, followed by an unconditional $\times 0.8$ dampening factor. Finally, the risk score is floored to zero and rounded to the nearest integer.
 * **Rounding/floor behavior**: The final score is floored to 0 and rounded to the nearest integer.
 * **Thresholds**: Safe (<80), Warning (80-140), and Danger (>140) are developmental heuristics.
 * **Spillover heuristics**: High-risk zones heuristically leak a fraction of their total score to adjacent zones based on distance.
-* **Future-risk heuristic**: Uses current rainfall magnitude and water-proximity contribution across the selected time horizon to project a future score (not hydrologic forecasting).
+* **Future-risk heuristic**: A simple deterministic prototype heuristic that computes futureRiskScore by adding time-scaled components to the current modeled risk score. Specifically, it divides the current rainfall magnitude by 50, multiplies the water-proximity value by 2, multiplies both contributions by the selected time horizon, adds them to the current modeled risk score, and applies a floor at zero and rounds to the nearest integer. This is not scientific hydrologic forecasting.
 * **Dynamic radius**: Zone display radius scales geometrically with the risk score.
 * **Adaptive weight behavior**: A simple deterministic heuristic alters the rainfall weight ($W_r$) and proximity weight ($W_p$) based on recent trends in maximum risk scores. The elevation weight ($W_e$) does not adapt.
 
@@ -65,7 +65,7 @@ The backend is built with Node.js, Express, and Prisma. It handles the coordinat
 ## Installation / local run
 
 **Prerequisites:**
-* Node.js (v18+)
+* Node.js (v20.x LTS tested)
 * npm
 
 **Backend Setup (Windows PowerShell):**
@@ -74,7 +74,7 @@ cd backend
 npm ci
 Copy-Item .env.example .env
 npx prisma db push
-npm run dev
+npm start
 ```
 
 **Backend Setup (macOS/Linux):**
@@ -83,7 +83,7 @@ cd backend
 npm ci
 cp .env.example .env
 npx prisma db push
-npm run dev
+npm start
 ```
 
 *(Optional) Call the seed endpoint (`POST /api/shelters/seed`) to populate the local database if shelters are empty.*
